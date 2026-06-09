@@ -7,15 +7,18 @@
     "dev": "astro dev",
     "check": "astro check",
     "build": "astro build",
+    "test": "vitest run",
     "preview": "astro preview"
   },
   "dependencies": {
     "astro": "6.4.5",
-    "govuk-frontend": "6.2.0"
+    "govuk-frontend": "6.2.0",
+    "parse5": "^8.0.1"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
     "sass-embedded": "1.100.0",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.8"
   }
 }
