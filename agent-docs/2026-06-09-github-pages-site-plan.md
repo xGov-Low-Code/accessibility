@@ -27,6 +27,7 @@ Current first dataset:
 - Export metadata includes schema version, source, table, export timestamp, and record count
 - Current export timestamp: `2026-06-09T20:26:49.5290998Z`
 - 60 active records and 3 inactive records
+- Inactive records should be ignored for the public site because they are not needed by the target audience
 - 32 records include descriptions
 - 28 records include guidance
 - 58 records include an accessibility team assessment date
@@ -71,7 +72,6 @@ Primary user needs:
 - Filter by recommendation.
 - Filter by classic or modern control type.
 - Filter by preview status.
-- Include or exclude inactive records.
 - Distinguish "accessible" from "recommended", since those can differ.
 - Read guidance where it is available.
 - Understand when data was exported and when individual controls were assessed.
@@ -129,7 +129,7 @@ Suggested visual approach:
 
 - Astro
 - TypeScript
-- GOV.UK Frontend
+- `govuk-frontend` as the only external UI / design package for the first release
 - Static JSON import from `data/canvas-controls/ppcoe_canvascontrols.json`
 - Source data remains outside the site project in root `data/<subject>/` directories.
 
@@ -137,6 +137,39 @@ Suggested visual approach:
 
 - GOV.UK Frontend Sass or compiled CSS
 - Small local stylesheet for community branding, data cards, and status presentation
+- No additional external component library for the first release.
+- Do not add Microsoft Fluent, Material UI, Bootstrap, or similar UI kits unless a later requirement clearly justifies it.
+
+### Reusable Components
+
+Use small local Astro components to wrap repeated page and data patterns. These components should use semantic HTML first, then GOV.UK Frontend classes where they fit.
+
+Initial shared components:
+
+- `BaseLayout`: document shell, page title, meta tags, skip link, header, footer, and main landmark.
+- `CommunityHeader`: custom non-GOV.UK-branded header with site name and community status.
+- `SiteFooter`: custom footer with project links and ownership/status text.
+- `SkipLink`: keyboard skip link using GOV.UK Frontend styling.
+- `DatasetSummary`: summary counts and export date for the current dataset.
+- `RecommendationTag`: display metadata for recommendation values.
+- `ControlTypeTag`: classic / modern display label.
+- `AssessmentDate`: optional assessment date display with fallback text.
+- `FilterPanel`: accessible filter controls.
+- `ResultsCount`: visible result count for filter/search updates.
+- `ControlResultsTable`: desktop-friendly controls listing.
+- `ControlResultCard`: narrow-viewport controls listing.
+- `ControlMetadataList`: key-value facts for detail pages.
+- `GuidanceBlock`: sanitised guidance rendering with safe fallback.
+- `EmptyState`: empty search/filter result state with reset action.
+- `BackLink`: navigation back to the catalogue.
+
+Component rules:
+
+- Keep components thin and specific to repeated UI patterns.
+- Do not create abstractions for one-off content blocks.
+- Prefer GOV.UK Frontend classes for forms, tables, tags, skip links, spacing, and focus states.
+- Use local CSS only for community branding, catalogue-specific layout, and recommendation/status presentation.
+- Keep filtering behaviour as small TypeScript progressive enhancement. Add Svelte islands only if filter interactions become too complex for simple DOM enhancement.
 
 ### Client-Side Behaviour
 
@@ -202,7 +235,6 @@ Show:
 
 - Total controls
 - Active controls
-- Inactive controls
 - Last exported date
 - Number marked `Can use`
 - Number marked `Can use with amendments`
@@ -222,7 +254,6 @@ Use accessible form controls:
 - Checkboxes: recommendation values
 - Radios or checkboxes: classic / modern
 - Checkbox: preview controls
-- Checkbox: include inactive controls
 - Checkbox: show not yet assessed
 
 Avoid custom comboboxes unless there is a clear need.
@@ -241,7 +272,6 @@ Each result should show:
 - Accessible: yes / no
 - Classic or modern
 - Preview status
-- Active / inactive status if inactive records are included
 - Short description if available
 - Accessibility team assessment date if available
 - Guidance availability
@@ -255,7 +285,6 @@ Each control detail should show:
 - Accessibility status
 - Classic / modern
 - Preview status
-- Active / inactive status
 - Description
 - Guidance, if available
 - Accessibility team assessment date
@@ -273,7 +302,7 @@ Add a typed data module that:
 - Validates the top-level shape, schema version, and that `recordCount` matches the actual record count
 - Validates or normalises nullable fields
 - Treats blank recommendations as `Not assessed`
-- Treats inactive records separately from active records
+- Excludes inactive records from public catalogue pages, detail pages, filters, and summary counts
 - Creates stable slugs from control names and IDs
 - Groups recommendations into display metadata
 - Formats dates consistently
@@ -446,7 +475,7 @@ jobs:
 ### Phase 0: Confirmation
 
 - Confirm GitHub organisation, repository name, and Pages URL.
-- Confirm whether inactive records should be hidden by default.
+- Document that inactive records are excluded from the public site.
 - Confirm that `guidance` may be published publicly.
 - Confirm who owns the accessibility statement and review process.
 - Confirm data refresh cadence.
@@ -465,6 +494,7 @@ Acceptance criteria:
 - Add GOV.UK Frontend dependency.
 - Add base layout.
 - Add community header and footer.
+- Add initial reusable components for layout, skip link, header, footer, tags, and empty states.
 - Configure base path for GitHub Pages project hosting.
 - Add build and preview scripts.
 
@@ -473,6 +503,7 @@ Acceptance criteria:
 - Site builds locally.
 - Home page renders on desktop and mobile.
 - Header clearly says the site is community-maintained and not official GOV.UK.
+- Shared layout components render consistently across routes.
 
 ### Phase 2: Data Integration
 
@@ -480,18 +511,19 @@ Acceptance criteria:
 - Add typed data helpers.
 - Normalise blank recommendations to `Not assessed`.
 - Add display metadata for all recommendation values, including `Can use on mobile only`.
-- Separate active and inactive records.
+- Exclude inactive records from public catalogue data.
 - Sanitise guidance HTML.
 - Generate summary counts.
 - Render a complete controls list.
 - Format dates.
+- Implement dataset, recommendation, metadata, and guidance display components.
 
 Acceptance criteria:
 
 - Record count matches source JSON.
 - Summary counts match source JSON.
 - Null descriptions, guidance, assessment dates, and recommendations do not break rendering.
-- Inactive records are handled according to the agreed publication rule.
+- Inactive records are excluded from catalogue pages, detail pages, filters, and summary counts.
 - Guidance renders without CKEditor wrappers, inline styles, or broken heading order.
 
 ### Phase 3: Search and Filters
@@ -500,10 +532,10 @@ Acceptance criteria:
 - Add recommendation filters.
 - Add classic / modern filter.
 - Add preview filter.
-- Add active / inactive filter or "include inactive" option.
 - Add accessible / not accessible filter.
 - Update result count dynamically.
 - Store state in query parameters.
+- Use reusable filter, result count, table/card, and empty state components.
 
 Acceptance criteria:
 
@@ -518,6 +550,7 @@ Acceptance criteria:
 - Link each listing row/card to detail page.
 - Render description, recommendation, accessibility status, guidance, assessment dates, and modified date.
 - Add a back link to the catalogue.
+- Reuse metadata, recommendation, guidance, and back link components from the catalogue.
 
 Acceptance criteria:
 
@@ -530,7 +563,7 @@ Acceptance criteria:
 
 - Add linting and formatting.
 - Add build check in CI.
-- Add data contract tests for record count, recommendation values, inactive records, date parsing, and unique slugs.
+- Add data contract tests for record count, recommendation values, inactive-record exclusion, date parsing, and unique slugs.
 - Add guidance sanitisation tests.
 - Add basic Playwright smoke tests.
 - Add axe checks for key pages.
@@ -590,13 +623,38 @@ Mitigation:
 
 Risk:
 
-Inactive records could confuse users if shown alongside active guidance without context.
+Inactive records could confuse users if shown alongside active guidance, and they are not needed by the target audience.
 
 Mitigation:
 
-- Hide inactive records from the default catalogue unless transparency requires otherwise.
-- If included, label them clearly and exclude them from default recommendation counts.
-- Document how inactive records are treated.
+- Exclude inactive records from the public catalogue, detail pages, filters, and summary counts.
+- Keep inactive records only in the source dataset for auditability.
+- Add a data contract test so accidental inclusion fails loudly.
+
+### Component Over-Abstraction
+
+Risk:
+
+The site is small enough that too many generic components could make implementation harder to read and maintain.
+
+Mitigation:
+
+- Create components only for repeated layout, data display, and interaction patterns.
+- Keep one-off page content directly in pages.
+- Prefer explicit props and simple markup over generic configuration objects.
+- Review component boundaries after the first catalogue and detail page are implemented.
+
+### External UI Package Creep
+
+Risk:
+
+Adding another UI library could conflict with GOV.UK-informed styling, increase JavaScript/CSS weight, and make accessibility behaviour harder to audit.
+
+Mitigation:
+
+- Use `govuk-frontend` as the only external UI / design package for the first release.
+- Build project-specific UI as local Astro components.
+- Add another UI package only if there is a specific unmet need and the trade-off is documented.
 
 ### Screenshot URLs May Not Work
 
@@ -661,7 +719,6 @@ Mitigation:
 
 ## Open Decisions
 
-- Confirm whether inactive records are hidden by default or available behind a filter.
 - Confirm who owns the accessibility statement and review process.
 - Confirm data refresh cadence.
 - Confirm whether guidance is considered ready for public publishing.

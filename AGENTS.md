@@ -53,3 +53,18 @@ If you think a convention is harmful, surface it. Don't fork silently.
 "Completed" is wrong if anything was skipped silently.
 "Tests pass" is wrong if any were skipped.
 Default to surfacing uncertainty, not hiding it.
+
+## Astro Site Rules
+
+These rules apply when building or changing the planned static site.
+
+- The static site lives in `site/`; source datasets stay in root `data/<subject>/`.
+- Use Astro with TypeScript.
+- Use `govuk-frontend` as the only external UI/design package unless explicitly agreed.
+- Do not use GOV.UK crown assets, official GOV.UK headers, or service-style framing.
+- Use `astro add` for official Astro integrations.
+- Check current Astro docs before using integrations, content collections, actions, sessions, or deployment config.
+- Treat exported guidance HTML as unsafe: sanitise it at build time before rendering.
+- Do not render Dataverse screenshot URLs until screenshots are exported as static assets.
+- Configure and test Astro `site` and `base` for GitHub Pages project hosting.
+- Verification should include build, typecheck/data validation, and accessibility smoke checks when available.
