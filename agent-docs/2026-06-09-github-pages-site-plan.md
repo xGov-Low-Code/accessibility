@@ -23,16 +23,19 @@ The site should feel public-sector, plain, trustworthy, and accessible, while ma
 Current first dataset:
 
 - `data/canvas-controls/ppcoe_canvascontrols.json`
-- 63 records
-- Export metadata includes schema version, source, table, export timestamp, and record count
-- Current export timestamp: `2026-06-09T20:26:49.5290998Z`
-- 60 active records and 3 inactive records
-- Inactive records should be ignored for the public site because they are not needed by the target audience
-- 32 records include descriptions
-- 28 records include guidance
-- 58 records include an accessibility team assessment date
-- 36 records include a platform team assessment date
-- 41 records include Dataverse-relative screenshot URLs; static image export is coming soon but is not part of this first plan
+- Export metadata includes schema version, source, table, `exportedAtUtc`, and `recordCount`
+- Inactive records may be present and should be ignored for the public site because they are not needed by the target audience
+- Records may include descriptions, guidance, assessment dates, recommendations, and Dataverse-relative screenshot URLs
+- Static image export is coming soon but is not part of this first plan
+
+Important top-level fields:
+
+- `schemaVersion`
+- `source`
+- `table`
+- `exportedAtUtc`
+- `recordCount`
+- `records`
 
 Important record fields:
 
@@ -55,12 +58,12 @@ Important record fields:
 
 Current recommendation values:
 
-- `Can use` - 21 records
-- `Can use with amendments` - 17 records
-- `Avoid using if possible` - 9 records
-- `Do not use` - 13 records
-- `Can use on mobile only` - 1 record
-- Blank / not yet assessed - 2 records
+- `Can use`
+- `Can use with amendments`
+- `Avoid using if possible`
+- `Do not use`
+- `Can use on mobile only`
+- `Not assessed` for blank source values
 
 ## Product Goal
 
@@ -208,10 +211,7 @@ Suggested flow:
 /canvas-controls/
   Summary of the Canvas Controls dataset
   Search and filters
-  Controls list
-
-/canvas-controls/controls/
-  Full Canvas Controls index
+  Canonical controls catalogue
 
 /canvas-controls/controls/[slug]/
   Detail page for one control
@@ -227,6 +227,8 @@ Suggested flow:
 ```
 
 For a first release, include detail pages if feasible because the dataset now contains guidance and assessment dates. If detail pages are deferred, each result on `/canvas-controls/` must still have a stable fragment link so individual controls can be shared.
+
+The canonical controls catalogue route is `/canvas-controls/`. Do not add a second full controls index route unless a later user need makes that extra route worthwhile.
 
 ## Key Interface Elements
 
@@ -252,10 +254,10 @@ Show:
 Use accessible form controls:
 
 - Text input: search by name and description
-- Checkboxes: recommendation values
+- Checkboxes: recommendation values, including `Not assessed`
 - Radios or checkboxes: classic / modern
 - Checkbox: preview controls
-- Checkbox: show not yet assessed
+- Checkbox: accessible / not accessible
 
 Avoid custom comboboxes unless there is a clear need.
 
@@ -300,23 +302,26 @@ Do not rely on screenshots until image hosting is resolved. Existing `screenshot
 Add a typed data module that:
 
 - Imports the JSON from `data/canvas-controls/ppcoe_canvascontrols.json`
-- Validates the top-level shape, schema version, and that `recordCount` matches the actual record count
+- Validates the top-level shape, schema version, `exportedAtUtc`, and that `recordCount` matches the actual record count
 - Validates or normalises nullable fields
 - Treats blank recommendations as `Not assessed`
 - Excludes inactive records from public catalogue pages, detail pages, filters, and summary counts
-- Creates stable slugs from control names and IDs
+- Creates stable slugs from control name, classic / modern type, and a short ID suffix
 - Groups recommendations into display metadata
 - Formats dates consistently
-- Sanitises guidance HTML before rendering
+- Normalises and sanitises guidance HTML before rendering
 
 Guidance handling:
 
 - Source guidance is rich HTML from Dataverse / CKEditor.
+- Guidance is authored by the accessibility team, so the main concern is publishable, accessible, consistent markup rather than hostile input.
 - Do not inject guidance HTML directly into pages.
 - Strip wrapper `div` elements, inline `style` attributes, generated classes, and source-system IDs.
 - Preserve safe semantic elements such as paragraphs, lists, strong emphasis, and links.
 - Downshift any heading inside guidance so page heading order remains logical.
 - For links that open in a new tab, add clear link text and `rel="noopener noreferrer"`, or avoid forcing a new tab.
+- Use a small, well-maintained non-UI parser or sanitiser dependency if needed. The `govuk-frontend` restriction applies to external UI / design packages, not build-time data quality tools.
+- If HTML continues to make publishing awkward, consider changing the source guidance format to Markdown or structured plain-text fields in a later data refresh.
 
 Suggested recommendation order:
 
@@ -421,7 +426,9 @@ Preferred deployment:
 - Expected project site URL: `https://xgov-low-code.github.io/accessibility/`.
 - Expected Canvas Controls URL: `https://xgov-low-code.github.io/accessibility/canvas-controls/`.
 - Verify the GitHub organisation, repository name, Pages settings, and final URL before implementation.
-- Configure Astro `site` and `base` for the project site path.
+- Configure Astro `site` as `https://xgov-low-code.github.io`.
+- Configure Astro `base` as `/accessibility`.
+- Prefix internal root-relative links with the base path, or use a base-aware local link helper.
 
 Actions workflow outline:
 
@@ -446,17 +453,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
           cache-dependency-path: site/package-lock.json
+      - uses: actions/configure-pages@v5
       - run: npm ci
+        working-directory: site
+      - run: npm run check --if-present
+        working-directory: site
+      - run: npm run test --if-present
         working-directory: site
       - run: npm run build
         working-directory: site
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: site/dist
 
@@ -468,7 +480,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 ```
 
 ## Implementation Phases
@@ -480,10 +492,10 @@ Start with a thin vertical slice before building the full first release. This sh
 Scope:
 
 - Scaffold the Astro app under root `site/`.
-- Configure TypeScript, `govuk-frontend`, and the expected GitHub Pages base path.
+- Configure TypeScript, `govuk-frontend`, Astro `site`, and Astro `base`.
 - Add the base layout, skip link, community header, footer, and core tag components.
 - Add the typed Canvas Controls data module.
-- Validate schema version, `recordCount`, known recommendation values, date parsing, and unique slugs.
+- Validate schema version, `exportedAtUtc`, `recordCount`, known recommendation values, date parsing, and unique slugs.
 - Exclude inactive records from public output.
 - Normalise blank recommendations to `Not assessed`.
 - Sanitise guidance HTML.
@@ -512,7 +524,7 @@ Acceptance criteria:
 
 Acceptance criteria:
 
-- Public URL and Astro `base` value are known.
+- Public URL, Astro `site`, and Astro `base` values are documented.
 - Data publication rules are documented.
 - First-release scope is agreed.
 
@@ -552,8 +564,8 @@ Acceptance criteria:
 
 Acceptance criteria:
 
-- Record count matches source JSON.
-- Summary counts match source JSON.
+- Source `recordCount` matches the actual number of records in the source JSON.
+- Public summary counts are generated from active public records only.
 - Null descriptions, guidance, assessment dates, and recommendations do not break rendering.
 - Inactive records are excluded from catalogue pages, detail pages, filters, and summary counts.
 - Guidance renders without CKEditor wrappers, inline styles, or broken heading order.
@@ -561,7 +573,7 @@ Acceptance criteria:
 ### Phase 3: Search and Filters
 
 - Add search input.
-- Add recommendation filters.
+- Add recommendation filters, including `Not assessed`.
 - Add classic / modern filter.
 - Add preview filter.
 - Add accessible / not accessible filter.
@@ -591,7 +603,7 @@ Full client-side search and filtering should follow the next implementation slic
 Acceptance criteria:
 
 - Each record has a unique page.
-- Duplicate names are handled by including part of the ID in the slug.
+- Duplicate names are handled by including classic / modern type and a short ID suffix in the slug.
 - Detail pages render complete data without exposing confusing raw codes by default.
 - Records without guidance or assessment dates display clear fallback text.
 
@@ -619,6 +631,7 @@ Acceptance criteria:
 - Add data update process: the exported JSON is updated automatically each day from the Defra tenant, then validated by data contract tests before the published site updates.
 - Add contribution notes.
 - Add an accessibility statement page owned by the Defra Power Platform Service Team and Defra Accessibility Team.
+- Follow current public sector accessibility statement guidance and do not launch with placeholder statement content.
 
 Acceptance criteria:
 
@@ -626,6 +639,7 @@ Acceptance criteria:
 - Deployment path is documented.
 - Site explains data source, export date, and daily refresh cadence.
 - Accessibility statement has a named role owner, review process, and review cadence.
+- Accessibility statement includes compliance status against WCAG 2.2 AA, known non-compliances with WCAG references, any disproportionate burden or exempt content claims, feedback contact details, enforcement route, preparation date, and review date.
 
 ## Risks and Mitigations
 
@@ -646,15 +660,17 @@ Mitigation:
 
 Risk:
 
-Guidance is exported as rich HTML with CKEditor wrapper markup, inline styles, generated classes, and occasional headings. Rendering it directly could harm accessibility, visual consistency, or security.
+Guidance is exported as rich HTML with CKEditor wrapper markup, inline styles, generated classes, and occasional headings. Rendering it directly could harm accessibility, visual consistency, and page structure.
 
 Mitigation:
 
-- Sanitise guidance at build time.
+- Normalise and sanitise guidance at build time.
 - Allow only a small set of semantic HTML elements and safe attributes.
 - Strip inline styles and wrapper markup.
+- Use a small non-UI parser or sanitiser dependency if needed.
 - Add tests for the sanitiser.
 - Review guidance output in desktop, mobile, keyboard, and screen reader spot checks.
+- Revisit the source guidance format if HTML keeps adding implementation friction.
 
 ### Inactive Records
 
@@ -690,6 +706,7 @@ Adding another UI library could conflict with GOV.UK-informed styling, increase 
 Mitigation:
 
 - Use `govuk-frontend` as the only external UI / design package for the first release.
+- Non-UI dependencies for Astro, TypeScript, testing, validation, and guidance sanitisation are allowed when they are specific and justified.
 - Build project-specific UI as local Astro components.
 - Add another UI package only if there is a specific unmet need and the trade-off is documented.
 
@@ -714,7 +731,7 @@ The dataset refreshes daily from the Defra tenant. A source change could introdu
 Mitigation:
 
 - Run data contract tests against every refreshed dataset before publishing.
-- Fail the build loudly if schema version, record count, recommendation values, inactive-record exclusion, date parsing, slug uniqueness, or guidance sanitisation no longer match expectations.
+- Fail the build loudly if schema version, `exportedAtUtc`, record count, recommendation values, inactive-record exclusion, date parsing, slug uniqueness, or guidance sanitisation no longer match expectations.
 - Show the export timestamp on the site so users can see data currency.
 
 ### Recommendation Versus Accessibility Status
@@ -763,6 +780,7 @@ GitHub Pages project sites are usually served from `/<repository-name>/`, which 
 Mitigation:
 
 - Configure Astro `base` correctly.
+- Use `site: "https://xgov-low-code.github.io"` and `base: "/accessibility"` unless the repository name, organisation, or hosting model changes.
 - Prefer relative links where suitable.
 - Test built output locally before deployment.
 
@@ -772,10 +790,16 @@ These decisions are resolved for the current work-in-progress release.
 
 - Accessibility statement owner: Defra Power Platform Service Team and Defra Accessibility Team.
 - Accessibility statement review: before launch, after significant site changes, and at least every 12 months.
+- Accessibility statement content: follow current public sector accessibility statement requirements, including compliance status, known issues, contact route, enforcement route, preparation date, and review date.
 - Data refresh cadence: automatic daily update from the Defra tenant.
 - Data update process: the exported JSON is updated automatically from the Defra tenant, data contract tests validate it, generated summary counts are reviewed through the build output, and the site publishes through the GitHub Pages deployment.
 - Screenshots: coming soon, but out of scope while this plan is built out. Do not render screenshot placeholders.
 - Site status: work in progress until further notice.
+- Astro GitHub Pages config: `site` is `https://xgov-low-code.github.io` and `base` is `/accessibility`.
+- Canonical Canvas Controls catalogue route: `/canvas-controls/`.
+- Control detail slugs include control name, classic / modern type, and a short ID suffix.
+- `Not assessed` is a recommendation filter option, not a separate filter control.
+- Guidance HTML is trusted team-authored content, but it is still normalised and sanitised for accessible, consistent publishing.
 
 Future screenshot work:
 
