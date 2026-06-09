@@ -1,0 +1,28 @@
+---
+type Recommendation =
+  | "Can use"
+  | "Can use with amendments"
+  | "Can use on mobile only"
+  | "Avoid using if possible"
+  | "Do not use"
+  | "Not assessed";
+
+interface Props {
+  recommendation: Recommendation;
+}
+
+const { recommendation } = Astro.props;
+
+const tagClassByRecommendation: Record<Recommendation, string> = {
+  "Can use": "govuk-tag--green",
+  "Can use with amendments": "govuk-tag--turquoise",
+  "Can use on mobile only": "govuk-tag--purple",
+  "Avoid using if possible": "govuk-tag--yellow",
+  "Do not use": "govuk-tag--red",
+  "Not assessed": "govuk-tag--grey"
+};
+---
+
+<strong class:list={["govuk-tag", tagClassByRecommendation[recommendation]]}>
+  {recommendation}
+</strong>

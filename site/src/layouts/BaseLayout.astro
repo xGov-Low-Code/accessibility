@@ -1,0 +1,36 @@
+---
+import "../styles/govuk.scss";
+import "../styles/global.css";
+import CommunityHeader from "../components/CommunityHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SkipLink from "../components/SkipLink.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Accessibility artefacts and guidance for the xGov Low-Code community." } =
+  Astro.props;
+const pageTitle = `${title} - xGov Low-Code Accessibility`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <SkipLink />
+    <CommunityHeader />
+    <main class="govuk-main-wrapper app-main" id="main-content" tabindex="-1">
+      <div class="govuk-width-container">
+        <slot />
+      </div>
+    </main>
+    <SiteFooter />
+  </body>
+</html>

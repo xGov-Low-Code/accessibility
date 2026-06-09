@@ -38,4 +38,19 @@ The accessibility statement is reviewed before launch, after significant site ch
 
 ## Development
 
-The site has not been scaffolded yet. Local development commands will be added when `site/` exists.
+The site uses pnpm and lives under `site/`.
+
+```powershell
+cd site
+pnpm install
+pnpm run dev
+```
+
+Use these checks before publishing changes:
+
+```powershell
+cd site
+pnpm run check
+pnpm run build
+pnpm run preview
+```

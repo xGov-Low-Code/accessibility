@@ -1,0 +1,11 @@
+@use "../../node_modules/govuk-frontend/dist/govuk/settings/typography-font" with (
+  $govuk-font-family: ("Arial", sans-serif),
+  $govuk-include-default-font-face: false
+);
+@use "../../node_modules/govuk-frontend/dist/govuk/core";
+@use "../../node_modules/govuk-frontend/dist/govuk/objects/grid";
+@use "../../node_modules/govuk-frontend/dist/govuk/objects/main-wrapper";
+@use "../../node_modules/govuk-frontend/dist/govuk/objects/width-container";
+@use "../../node_modules/govuk-frontend/dist/govuk/components/skip-link";
+@use "../../node_modules/govuk-frontend/dist/govuk/components/tag";
+@use "../../node_modules/govuk-frontend/dist/govuk/utilities/visually-hidden";

@@ -1,0 +1,21 @@
+---
+import { withBase } from "../utils/paths";
+---
+
+<header class="app-header" role="banner">
+  <div class="govuk-width-container app-header__container">
+    <div class="app-header__brand">
+      <a class="app-header__link" href={withBase("/")}>
+        xGov Low-Code Accessibility
+      </a>
+      <p class="app-header__description">
+        Community-maintained guidance for the xGov Low-Code community
+      </p>
+    </div>
+
+    <div class="app-header__meta" aria-label="Site status">
+      <strong class="govuk-tag govuk-tag--grey">Not an official GOV.UK service</strong>
+      <strong class="govuk-tag govuk-tag--blue">Work in progress</strong>
+    </div>
+  </div>
+</header>

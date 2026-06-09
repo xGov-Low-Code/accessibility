@@ -1,0 +1,54 @@
+---
+import RecommendationTag from "../components/RecommendationTag.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../utils/paths";
+---
+
+<BaseLayout
+  title="Home"
+  description="Community-maintained accessibility artefacts and guidance for the xGov Low-Code community."
+>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Work in progress</span>
+      <h1 class="govuk-heading-xl">xGov Low-Code Accessibility</h1>
+      <p class="govuk-body-l">
+        Community-maintained accessibility artefacts and guidance for low-code makers working in government.
+      </p>
+      <p class="govuk-body">
+        The first planned section is Power Apps Canvas Controls accessibility guidance.
+      </p>
+    </div>
+  </div>
+
+  <section class="app-section" aria-labelledby="guidance-heading">
+    <h2 class="govuk-heading-l" id="guidance-heading">Guidance sections</h2>
+    <ul class="govuk-list app-section-list">
+      <li class="app-section-list__item">
+        <h3 class="govuk-heading-m app-section-list__heading">
+          <a class="govuk-link" href={withBase("/canvas-controls/")}>
+            Power Apps Canvas Controls Accessibility
+          </a>
+        </h3>
+        <p class="govuk-body">
+          Planned catalogue for control recommendations, accessibility status, guidance and assessment metadata.
+        </p>
+        <strong class="govuk-tag govuk-tag--grey">Coming next</strong>
+      </li>
+    </ul>
+  </section>
+
+  <section class="app-section" aria-labelledby="status-heading">
+    <h2 class="govuk-heading-l" id="status-heading">Recommendation statuses</h2>
+    <p class="govuk-body">
+      The Canvas Controls catalogue will use text status labels for recommendations.
+    </p>
+    <ul class="govuk-list app-tag-list" aria-label="Example recommendation labels">
+      <li><RecommendationTag recommendation="Can use" /></li>
+      <li><RecommendationTag recommendation="Can use with amendments" /></li>
+      <li><RecommendationTag recommendation="Avoid using if possible" /></li>
+      <li><RecommendationTag recommendation="Do not use" /></li>
+      <li><RecommendationTag recommendation="Not assessed" /></li>
+    </ul>
+  </section>
+</BaseLayout>

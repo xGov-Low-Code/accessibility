@@ -1,0 +1,10 @@
+---
+interface Props {
+  type: "Classic" | "Modern";
+}
+
+const { type } = Astro.props;
+const tagClass = type === "Classic" ? "govuk-tag--grey" : "govuk-tag--blue";
+---
+
+<strong class:list={["govuk-tag", tagClass]}>{type}</strong>

@@ -1,0 +1,14 @@
+---
+interface Props {
+  heading: string;
+  message: string;
+}
+
+const { heading, message } = Astro.props;
+---
+
+<section class="app-empty-state" aria-labelledby="empty-state-heading">
+  <h2 class="govuk-heading-m" id="empty-state-heading">{heading}</h2>
+  <p class="govuk-body">{message}</p>
+  <slot />
+</section>
