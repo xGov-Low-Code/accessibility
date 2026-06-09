@@ -23,16 +23,27 @@ The site should feel public-sector, plain, trustworthy, and accessible, while ma
 Current first dataset:
 
 - `data/canvas-controls/ppcoe_canvascontrols.json`
-- 61 records
-- Approximately 32 KB
+- 63 records
 - Export metadata includes schema version, source, table, export timestamp, and record count
+- Current export timestamp: `2026-06-09T20:26:49.5290998Z`
+- 60 active records and 3 inactive records
+- 32 records include descriptions
+- 28 records include guidance
+- 58 records include an accessibility team assessment date
+- 36 records include a platform team assessment date
+- 41 records include Dataverse-relative screenshot URLs, but image export is not yet confirmed
 
 Important record fields:
 
 - `id`
 - `name`
+- `assessedByAccessibilityTeamOn`
+- `assessedByPlatformTeamOn`
 - `description`
+- `guidance`
+- `screenshotUrl`
 - `status`
+- `statusCode`
 - `recommendation`
 - `recommendationCode`
 - `isInPreview`
@@ -43,11 +54,12 @@ Important record fields:
 
 Current recommendation values:
 
-- `Can use`
-- `Can use with amendments`
-- `Avoid using if possible`
-- `Do not use`
-- Blank / not yet assessed
+- `Can use` - 21 records
+- `Can use with amendments` - 17 records
+- `Avoid using if possible` - 9 records
+- `Do not use` - 13 records
+- `Can use on mobile only` - 1 record
+- Blank / not yet assessed - 2 records
 
 ## Product Goal
 
@@ -59,9 +71,10 @@ Primary user needs:
 - Filter by recommendation.
 - Filter by classic or modern control type.
 - Filter by preview status.
+- Include or exclude inactive records.
 - Distinguish "accessible" from "recommended", since those can differ.
-- Read concise guidance for each control.
-- Understand how current the data is.
+- Read guidance where it is available.
+- Understand when data was exported and when individual controls were assessed.
 - Link to a specific control or filtered view when discussing guidance with others.
 
 ## Design Position
@@ -179,7 +192,7 @@ Suggested flow:
   Link to available source datasets and explain fields
 ```
 
-For a first release, `/canvas-controls/` can contain the full catalogue and `/canvas-controls/controls/[slug]/` can be deferred if needed. The site should still be structured so detail pages can be added without reworking the design.
+For a first release, include detail pages if feasible because the dataset now contains guidance and assessment dates. If detail pages are deferred, each result on `/canvas-controls/` must still have a stable fragment link so individual controls can be shared.
 
 ## Key Interface Elements
 
@@ -188,12 +201,18 @@ For a first release, `/canvas-controls/` can contain the full catalogue and `/ca
 Show:
 
 - Total controls
+- Active controls
+- Inactive controls
 - Last exported date
 - Number marked `Can use`
 - Number marked `Can use with amendments`
 - Number marked `Avoid using if possible`
 - Number marked `Do not use`
+- Number marked `Can use on mobile only`
 - Number not yet assessed
+- Number with guidance
+- Number with accessibility team assessment dates
+- Number with platform team assessment dates
 
 ### Filters
 
@@ -203,6 +222,7 @@ Use accessible form controls:
 - Checkboxes: recommendation values
 - Radios or checkboxes: classic / modern
 - Checkbox: preview controls
+- Checkbox: include inactive controls
 - Checkbox: show not yet assessed
 
 Avoid custom comboboxes unless there is a clear need.
@@ -221,8 +241,10 @@ Each result should show:
 - Accessible: yes / no
 - Classic or modern
 - Preview status
+- Active / inactive status if inactive records are included
 - Short description if available
-- Last modified date
+- Accessibility team assessment date if available
+- Guidance availability
 
 ### Detail View
 
@@ -233,9 +255,13 @@ Each control detail should show:
 - Accessibility status
 - Classic / modern
 - Preview status
+- Active / inactive status
 - Description
-- Dates
-- Raw data fields for transparency, if useful
+- Guidance, if available
+- Accessibility team assessment date
+- Platform team assessment date
+- Last modified date
+- Raw data fields for transparency, if useful, but do not show source-system codes by default
 
 Do not rely on screenshots until image hosting is resolved. Existing `screenshotUrl` values appear to be Dataverse-relative paths and may not work on GitHub Pages.
 
@@ -244,23 +270,38 @@ Do not rely on screenshots until image hosting is resolved. Existing `screenshot
 Add a typed data module that:
 
 - Imports the JSON from `data/canvas-controls/ppcoe_canvascontrols.json`
+- Validates the top-level shape, schema version, and that `recordCount` matches the actual record count
 - Validates or normalises nullable fields
+- Treats blank recommendations as `Not assessed`
+- Treats inactive records separately from active records
 - Creates stable slugs from control names and IDs
 - Groups recommendations into display metadata
 - Formats dates consistently
+- Sanitises guidance HTML before rendering
 
-Suggested status order:
+Guidance handling:
+
+- Source guidance is rich HTML from Dataverse / CKEditor.
+- Do not inject guidance HTML directly into pages.
+- Strip wrapper `div` elements, inline `style` attributes, generated classes, and source-system IDs.
+- Preserve safe semantic elements such as paragraphs, lists, strong emphasis, and links.
+- Downshift any heading inside guidance so page heading order remains logical.
+- For links that open in a new tab, add clear link text and `rel="noopener noreferrer"`, or avoid forcing a new tab.
+
+Suggested recommendation order:
 
 1. `Can use`
 2. `Can use with amendments`
-3. `Avoid using if possible`
-4. `Do not use`
-5. `Not assessed`
+3. `Can use on mobile only`
+4. `Avoid using if possible`
+5. `Do not use`
+6. `Not assessed`
 
 Recommended colour treatment:
 
 - `Can use`: green tag
 - `Can use with amendments`: blue or turquoise tag
+- `Can use on mobile only`: purple or blue tag with explicit text
 - `Avoid using if possible`: yellow or amber tag with black text
 - `Do not use`: red tag
 - `Not assessed`: grey tag
@@ -281,6 +322,8 @@ Minimum checks:
 - Tables have headers and captions where used.
 - Heading order is logical.
 - Page title changes per route.
+- Guidance HTML is sanitised and cannot introduce broken heading order, inline colour-only meaning, scripts, or layout-breaking styles.
+- External links in guidance have accessible link text.
 - Search and filters work at 200% zoom and on narrow screens.
 - No inaccessible custom select, combobox, tab, or disclosure behaviour.
 - Respect reduced motion if motion is added.
@@ -301,7 +344,19 @@ Suggested manual checks:
 
 ## Repository Layout
 
-Confirmed structure:
+Current structure:
+
+```text
+agent-docs/
+  2026-06-09-github-pages-site-plan.md
+data/
+  canvas-controls/
+    ppcoe_canvascontrols.json
+AGENTS.md
+README.md
+```
+
+Target structure:
 
 ```text
 agent-docs/
@@ -333,8 +388,10 @@ Preferred deployment:
 - Deploy from pushes to `main`.
 - Build from `site`.
 - Deploy `site/dist`.
-- Serve the project site at `https://xgov-low-code.github.io/accessibility/`.
-- Serve the Canvas Controls section at `https://xgov-low-code.github.io/accessibility/canvas-controls/`.
+- Expected project site URL: `https://xgov-low-code.github.io/accessibility/`.
+- Expected Canvas Controls URL: `https://xgov-low-code.github.io/accessibility/canvas-controls/`.
+- Confirm the GitHub organisation, repository name, Pages settings, and final URL before implementation.
+- Configure Astro `site` and `base` for the project site path.
 
 Actions workflow outline:
 
@@ -386,6 +443,21 @@ jobs:
 
 ## Implementation Phases
 
+### Phase 0: Confirmation
+
+- Confirm GitHub organisation, repository name, and Pages URL.
+- Confirm whether inactive records should be hidden by default.
+- Confirm that `guidance` may be published publicly.
+- Confirm who owns the accessibility statement and review process.
+- Confirm data refresh cadence.
+- Confirm whether screenshots will be exported as static assets later.
+
+Acceptance criteria:
+
+- Public URL and Astro `base` value are known.
+- Data publication rules are documented.
+- First-release scope is agreed.
+
 ### Phase 1: Foundation
 
 - Scaffold Astro site.
@@ -407,6 +479,9 @@ Acceptance criteria:
 - Import JSON data.
 - Add typed data helpers.
 - Normalise blank recommendations to `Not assessed`.
+- Add display metadata for all recommendation values, including `Can use on mobile only`.
+- Separate active and inactive records.
+- Sanitise guidance HTML.
 - Generate summary counts.
 - Render a complete controls list.
 - Format dates.
@@ -415,7 +490,9 @@ Acceptance criteria:
 
 - Record count matches source JSON.
 - Summary counts match source JSON.
-- Null descriptions and recommendations do not break rendering.
+- Null descriptions, guidance, assessment dates, and recommendations do not break rendering.
+- Inactive records are handled according to the agreed publication rule.
+- Guidance renders without CKEditor wrappers, inline styles, or broken heading order.
 
 ### Phase 3: Search and Filters
 
@@ -423,6 +500,7 @@ Acceptance criteria:
 - Add recommendation filters.
 - Add classic / modern filter.
 - Add preview filter.
+- Add active / inactive filter or "include inactive" option.
 - Add accessible / not accessible filter.
 - Update result count dynamically.
 - Store state in query parameters.
@@ -438,20 +516,25 @@ Acceptance criteria:
 - Add stable slugs.
 - Generate `/canvas-controls/controls/[slug]/` pages.
 - Link each listing row/card to detail page.
-- Add previous / next or back link.
+- Render description, recommendation, accessibility status, guidance, assessment dates, and modified date.
+- Add a back link to the catalogue.
 
 Acceptance criteria:
 
 - Each record has a unique page.
 - Duplicate names are handled by including part of the ID in the slug.
 - Detail pages render complete data without exposing confusing raw codes by default.
+- Records without guidance or assessment dates display clear fallback text.
 
 ### Phase 5: Accessibility and Quality
 
 - Add linting and formatting.
 - Add build check in CI.
+- Add data contract tests for record count, recommendation values, inactive records, date parsing, and unique slugs.
+- Add guidance sanitisation tests.
 - Add basic Playwright smoke tests.
 - Add axe checks for key pages.
+- Test built output under the GitHub Pages base path.
 - Add manual accessibility checklist to docs.
 
 Acceptance criteria:
@@ -489,6 +572,32 @@ Mitigation:
 - Add visible community status text.
 - Add an About page explaining ownership.
 
+### Rich Text Guidance
+
+Risk:
+
+Guidance is exported as rich HTML with CKEditor wrapper markup, inline styles, generated classes, and occasional headings. Rendering it directly could harm accessibility, visual consistency, or security.
+
+Mitigation:
+
+- Sanitise guidance at build time.
+- Allow only a small set of semantic HTML elements and safe attributes.
+- Strip inline styles and wrapper markup.
+- Add tests for the sanitiser.
+- Review guidance output in desktop, mobile, keyboard, and screen reader spot checks.
+
+### Inactive Records
+
+Risk:
+
+Inactive records could confuse users if shown alongside active guidance without context.
+
+Mitigation:
+
+- Hide inactive records from the default catalogue unless transparency requires otherwise.
+- If included, label them clearly and exclude them from default recommendation counts.
+- Document how inactive records are treated.
+
 ### Screenshot URLs May Not Work
 
 Risk:
@@ -512,6 +621,7 @@ Mitigation:
 - Display both fields clearly.
 - Add explanatory text near filters.
 - Use "Recommendation" as the primary decision aid.
+- Include the assessment dates so users can judge currency.
 
 ### Blank Recommendations
 
@@ -524,6 +634,18 @@ Mitigation:
 - Treat blank values as `Not assessed`.
 - Include a filter for not assessed controls.
 - Style them neutrally.
+
+### Recommendation Values May Change
+
+Risk:
+
+The current dataset includes `Can use on mobile only`, which was not in the original plan. More values could be added in future exports.
+
+Mitigation:
+
+- Validate recommendation values during build.
+- Fail loudly for unknown recommendation values unless a deliberate fallback is documented.
+- Keep recommendation display metadata close to the data module.
 
 ### Static Hosting Base Path
 
@@ -539,9 +661,11 @@ Mitigation:
 
 ## Open Decisions
 
-- Confirm whether detail pages are needed for first release.
+- Confirm whether inactive records are hidden by default or available behind a filter.
 - Confirm who owns the accessibility statement and review process.
 - Confirm data refresh cadence.
+- Confirm whether guidance is considered ready for public publishing.
+- Confirm whether screenshots will be exported as static assets in a later release.
 
 ## First Build Recommendation
 
@@ -552,8 +676,11 @@ Build the first release with:
 - Canvas Controls catalogue page at `/canvas-controls/`
 - Dataset summary
 - Search and filters
+- Detail pages for individual controls
+- Guidance rendering where guidance is available
+- Assessment dates where available
 - GOV.UK-informed styling with custom community header
 - GitHub Actions deployment
 - README updates
 
-Then add detail pages and richer documentation once the basic catalogue is live.
+Then add screenshots once image export and hosting are confirmed.
