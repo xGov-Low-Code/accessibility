@@ -16,7 +16,7 @@ This file tracks implementation progress for the task files in this folder. The 
 | Task | Status | Depends on | Notes |
 | --- | --- | --- | --- |
 | [01: Verify Pages And Release Scope](01-verify-pages-and-release-scope.md) | Complete | None | Documented hosting values, first-release scope, data publication rules, ownership, and screenshot non-goal in README. |
-| [02: Scaffold Astro Site Foundation](02-scaffold-astro-site-foundation.md) | Ready | 01 | Create the Astro TypeScript site under `site/` with GOV.UK Frontend and shared layout components. |
+| [02: Scaffold Astro Site Foundation](02-scaffold-astro-site-foundation.md) | Complete | 01 | Created the Astro TypeScript site under `site/` with pnpm, GOV.UK Frontend, GitHub Pages base config, shared layout components, and README development commands. |
 | [03: Build Canvas Controls Data Contract](03-build-canvas-controls-data-contract.md) | Ready | 02 | Add typed data helpers, validation, active-record filtering, slugs, summary counts, and guidance sanitisation. |
 | [04: Render Canvas Controls Catalogue](04-render-canvas-controls-catalogue.md) | Ready | 03 | Build `/canvas-controls/` from the real dataset with summary counts and a server-rendered active-controls list. |
 | [05: Add Progressive Search And Filters](05-add-progressive-search-and-filters.md) | Ready | 04 | Add accessible client-side search, filters, query parameters, result counts, and empty state. |
@@ -28,8 +28,10 @@ This file tracks implementation progress for the task files in this folder. The 
 ## Current Checkpoint
 
 - Task 01 is complete.
+- Task 02 is complete.
 - Hosting, ownership, data publication rules, first-release scope, and screenshot handling are documented in `README.md`.
-- The next task to pick up is `02-scaffold-astro-site-foundation.md`.
+- The Astro foundation site builds locally, serves under `/accessibility/`, and keeps source datasets outside `site/`.
+- The next task to pick up is `03-build-canvas-controls-data-contract.md`.
 
 ## Update Rules
 
@@ -44,3 +46,4 @@ This file tracks implementation progress for the task files in this folder. The 
 | --- | --- | --- |
 | 2026-06-09 | Task split | Created the task files and this progress tracker. |
 | 2026-06-09 | 01 | Verified the local planning context and documented the public URL, Astro `site`/`base`, first-release scope, data publication rules, ownership and review cadence, and screenshot non-goal in `README.md`. |
+| 2026-06-09 | 02 | Scaffolded the pnpm-based Astro TypeScript site in `site/`, configured `site`/`base` for GitHub Pages, added GOV.UK Frontend foundation styles and shared layout/status components, documented local commands, and verified `pnpm run check`, `pnpm run build`, `/accessibility/` preview response, and desktop/narrow visual smoke checks. |
