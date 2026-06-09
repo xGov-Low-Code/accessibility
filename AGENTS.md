@@ -3,6 +3,19 @@
 These rules apply to every task in this project unless explicitly overridden.
 Bias: caution over speed on non-trivial work.
 
+## Project Context
+
+This repository contains accessibility artefacts for the xGov Low-Code community.
+
+- The planned public site is a static GitHub Pages site under `site/`.
+- Source datasets stay under root `data/<subject>/` directories.
+- The first dataset is Power Apps Canvas Controls accessibility guidance at `data/canvas-controls/ppcoe_canvascontrols.json`.
+- The canonical implementation plan is `agent-docs/2026-06-09-github-pages-site-plan.md`.
+- The site is work in progress until further notice.
+- Data refreshes automatically each day from the Defra tenant.
+- The Defra Power Platform Service Team and Defra Accessibility Team own the accessibility statement and review process.
+- Screenshots are coming soon, but must not be rendered until static image assets and suitable alt text are available.
+
 ## Rule 1 — Think Before Coding
 State assumptions explicitly. Ask rather than guess.
 Push back when a simpler approach exists. Stop when confused.

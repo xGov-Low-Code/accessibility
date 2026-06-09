@@ -32,7 +32,7 @@ Current first dataset:
 - 28 records include guidance
 - 58 records include an accessibility team assessment date
 - 36 records include a platform team assessment date
-- 41 records include Dataverse-relative screenshot URLs, but image export is not yet confirmed
+- 41 records include Dataverse-relative screenshot URLs; static image export is coming soon but is not part of this first plan
 
 Important record fields:
 
@@ -112,6 +112,7 @@ Use a custom community header:
 - First section name: `Power Apps Canvas Controls Accessibility`
 - Supporting text: `Community-maintained guidance for the xGov Low-Code community`
 - Visible status text: `Not an official GOV.UK service`
+- Visible work status text: `Work in progress`
 
 Suggested visual approach:
 
@@ -419,7 +420,7 @@ Preferred deployment:
 - Deploy `site/dist`.
 - Expected project site URL: `https://xgov-low-code.github.io/accessibility/`.
 - Expected Canvas Controls URL: `https://xgov-low-code.github.io/accessibility/canvas-controls/`.
-- Confirm the GitHub organisation, repository name, Pages settings, and final URL before implementation.
+- Verify the GitHub organisation, repository name, Pages settings, and final URL before implementation.
 - Configure Astro `site` and `base` for the project site path.
 
 Actions workflow outline:
@@ -472,14 +473,42 @@ jobs:
 
 ## Implementation Phases
 
-### Phase 0: Confirmation
+### Next Implementation Slice
 
-- Confirm GitHub organisation, repository name, and Pages URL.
+Start with a thin vertical slice before building the full first release. This should prove the stack, data contract, routing, styling baseline, and GitHub Pages path assumptions with the smallest useful user-facing page.
+
+Scope:
+
+- Scaffold the Astro app under root `site/`.
+- Configure TypeScript, `govuk-frontend`, and the expected GitHub Pages base path.
+- Add the base layout, skip link, community header, footer, and core tag components.
+- Add the typed Canvas Controls data module.
+- Validate schema version, `recordCount`, known recommendation values, date parsing, and unique slugs.
+- Exclude inactive records from public output.
+- Normalise blank recommendations to `Not assessed`.
+- Sanitise guidance HTML.
+- Render `/canvas-controls/` with real dataset summary counts and a simple active-controls list or table.
+- Add minimal README local development instructions for running the site.
+
+Acceptance criteria:
+
+- The site builds locally.
+- The Canvas Controls page renders from the real JSON dataset.
+- Summary counts match the active public records, not the raw inactive-inclusive source count.
+- Inactive records are excluded by test or explicit data assertion.
+- Guidance sanitisation is covered by at least one focused test.
+- The page works without client-side filtering JavaScript.
+- Screenshots are not rendered.
+- The README includes the basic commands needed to install, build, and preview the site.
+
+### Phase 0: Verification And Documentation
+
+- Verify GitHub organisation, repository name, and Pages URL.
 - Document that inactive records are excluded from the public site.
-- Confirm that `guidance` may be published publicly.
-- Confirm who owns the accessibility statement and review process.
-- Confirm data refresh cadence.
-- Confirm whether screenshots will be exported as static assets later.
+- Document that sanitised `guidance` is publishable in the public site.
+- Document that the Defra Power Platform Service Team and Defra Accessibility Team own the accessibility statement and review process.
+- Document the data refresh cadence: automatic daily update from the Defra tenant.
+- Document that screenshots are coming soon, but are out of scope while this plan is built out.
 
 Acceptance criteria:
 
@@ -497,6 +526,7 @@ Acceptance criteria:
 - Add initial reusable components for layout, skip link, header, footer, tags, and empty states.
 - Configure base path for GitHub Pages project hosting.
 - Add build and preview scripts.
+- Add minimal README local development instructions once the scaffold exists.
 
 Acceptance criteria:
 
@@ -504,6 +534,7 @@ Acceptance criteria:
 - Home page renders on desktop and mobile.
 - Header clearly says the site is community-maintained and not official GOV.UK.
 - Shared layout components render consistently across routes.
+- README includes initial local development commands.
 
 ### Phase 2: Data Integration
 
@@ -517,6 +548,7 @@ Acceptance criteria:
 - Render a complete controls list.
 - Format dates.
 - Implement dataset, recommendation, metadata, and guidance display components.
+- Add initial data contract tests for the source dataset and public active-record subset.
 
 Acceptance criteria:
 
@@ -542,6 +574,10 @@ Acceptance criteria:
 - Filters can be operated by keyboard.
 - Filtered URLs can be shared.
 - Empty results have useful text and a reset action.
+
+Note:
+
+Full client-side search and filtering should follow the next implementation slice. The first slice only needs a server-rendered active-controls catalogue that remains useful without JavaScript.
 
 ### Phase 4: Detail Pages
 
@@ -580,15 +616,16 @@ Acceptance criteria:
 
 - Update README with local development instructions.
 - Add GitHub Pages deployment instructions.
-- Add data update process.
+- Add data update process: the exported JSON is updated automatically each day from the Defra tenant, then validated by data contract tests before the published site updates.
 - Add contribution notes.
-- Add an accessibility statement page.
+- Add an accessibility statement page owned by the Defra Power Platform Service Team and Defra Accessibility Team.
 
 Acceptance criteria:
 
 - New contributors can run the site locally from README instructions.
 - Deployment path is documented.
-- Site explains data source and update date.
+- Site explains data source, export date, and daily refresh cadence.
+- Accessibility statement has a named role owner, review process, and review cadence.
 
 ## Risks and Mitigations
 
@@ -665,8 +702,20 @@ Current screenshot URLs are relative Dataverse download paths and are unlikely t
 Mitigation:
 
 - Do not render screenshots in the first release.
-- Add a placeholder only if useful.
-- Revisit if screenshots are exported as static assets.
+- Do not add screenshot placeholders.
+- Revisit screenshots soon, after this plan is built out and a static asset export provides usable image files and alt text.
+
+### Automated Data Refresh
+
+Risk:
+
+The dataset refreshes daily from the Defra tenant. A source change could introduce unexpected values or malformed content.
+
+Mitigation:
+
+- Run data contract tests against every refreshed dataset before publishing.
+- Fail the build loudly if schema version, record count, recommendation values, inactive-record exclusion, date parsing, slug uniqueness, or guidance sanitisation no longer match expectations.
+- Show the export timestamp on the site so users can see data currency.
 
 ### Recommendation Versus Accessibility Status
 
@@ -717,27 +766,34 @@ Mitigation:
 - Prefer relative links where suitable.
 - Test built output locally before deployment.
 
-## Open Decisions
+## Resolved Operating Decisions
 
-- Confirm who owns the accessibility statement and review process.
-- Confirm data refresh cadence.
-- Confirm whether guidance is considered ready for public publishing.
-- Confirm whether screenshots will be exported as static assets in a later release.
+These decisions are resolved for the current work-in-progress release.
+
+- Accessibility statement owner: Defra Power Platform Service Team and Defra Accessibility Team.
+- Accessibility statement review: before launch, after significant site changes, and at least every 12 months.
+- Data refresh cadence: automatic daily update from the Defra tenant.
+- Data update process: the exported JSON is updated automatically from the Defra tenant, data contract tests validate it, generated summary counts are reviewed through the build output, and the site publishes through the GitHub Pages deployment.
+- Screenshots: coming soon, but out of scope while this plan is built out. Do not render screenshot placeholders.
+- Site status: work in progress until further notice.
+
+Future screenshot work:
+
+- Add screenshots once the future export provides static image assets, stable paths, and suitable alt text.
 
 ## First Build Recommendation
 
-Build the first release with:
+Build the first implementation slice with:
 
 - Astro site under root `site/`
-- Repo-wide landing page
 - Canvas Controls catalogue page at `/canvas-controls/`
 - Dataset summary
-- Search and filters
-- Detail pages for individual controls
+- Simple active-controls list or table
+- Typed data module and initial data contract tests
+- Guidance sanitisation
 - Guidance rendering where guidance is available
 - Assessment dates where available
 - GOV.UK-informed styling with custom community header
-- GitHub Actions deployment
-- README updates
+- Minimal README local development instructions
 
-Then add screenshots once image export and hosting are confirmed.
+Then add search, filters, detail pages, GitHub Actions deployment, full documentation, and screenshots once image export and hosting are ready.
