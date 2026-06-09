@@ -1,0 +1,12 @@
+---
+interface Props {
+  count: number;
+}
+
+const { count } = Astro.props;
+const noun = count === 1 ? "control" : "controls";
+---
+
+<p class="govuk-body app-results-count" aria-live="polite">
+  <strong>{count}</strong> active {noun} shown.
+</p>

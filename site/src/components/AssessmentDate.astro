@@ -1,0 +1,19 @@
+---
+import { formatDate } from "../data/canvasControls";
+
+interface Props {
+  value: string | null;
+  missingText: string;
+}
+
+const { value, missingText } = Astro.props;
+const formattedDate = formatDate(value);
+---
+
+{
+  formattedDate && value ? (
+    <time datetime={value}>{formattedDate}</time>
+  ) : (
+    <span class="app-muted">{missingText}</span>
+  )
+}

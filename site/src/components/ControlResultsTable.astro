@@ -1,0 +1,70 @@
+---
+import type { PublicCanvasControl } from "../data/canvasControls";
+import AssessmentDate from "./AssessmentDate.astro";
+import ControlTypeTag from "./ControlTypeTag.astro";
+import RecommendationTag from "./RecommendationTag.astro";
+
+interface Props {
+  controls: PublicCanvasControl[];
+}
+
+const { controls } = Astro.props;
+
+function yesNo(value: boolean): string {
+  return value ? "Yes" : "No";
+}
+
+function previewText(value: boolean): string {
+  return value ? "In preview" : "Not in preview";
+}
+
+function guidanceText(value: string | null): string {
+  return value ? "Guidance available" : "No guidance available";
+}
+---
+
+<div class="app-results-table-wrapper">
+  <table class="govuk-table app-results-table">
+    <caption class="govuk-table__caption govuk-table__caption--m">Active controls</caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header app-results-table__name" scope="col">Control</th>
+        <th class="govuk-table__header" scope="col">Recommendation</th>
+        <th class="govuk-table__header" scope="col">Accessible</th>
+        <th class="govuk-table__header" scope="col">Type</th>
+        <th class="govuk-table__header" scope="col">Preview</th>
+        <th class="govuk-table__header" scope="col">Accessibility assessment</th>
+        <th class="govuk-table__header" scope="col">Guidance</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {
+        controls.map((control) => (
+          <tr class="govuk-table__row" id={`control-${control.slug}`}>
+            <th class="govuk-table__header app-results-table__name" scope="row">
+              <span>{control.name}</span>
+              <span class="govuk-body-s app-results-table__description">
+                {control.description ?? "No description available."}
+              </span>
+            </th>
+            <td class="govuk-table__cell">
+              <RecommendationTag recommendation={control.recommendation} />
+            </td>
+            <td class="govuk-table__cell">{yesNo(control.isAccessible)}</td>
+            <td class="govuk-table__cell">
+              <ControlTypeTag type={control.controlType} />
+            </td>
+            <td class="govuk-table__cell">{previewText(control.isInPreview)}</td>
+            <td class="govuk-table__cell">
+              <AssessmentDate
+                value={control.assessedByAccessibilityTeamOn}
+                missingText="Not assessed by accessibility team"
+              />
+            </td>
+            <td class="govuk-table__cell">{guidanceText(control.guidanceHtml)}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

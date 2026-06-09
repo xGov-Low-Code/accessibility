@@ -1,0 +1,71 @@
+---
+import ControlResultCard from "../../components/ControlResultCard.astro";
+import ControlResultsTable from "../../components/ControlResultsTable.astro";
+import DatasetSummary from "../../components/DatasetSummary.astro";
+import EmptyState from "../../components/EmptyState.astro";
+import ResultsCount from "../../components/ResultsCount.astro";
+import { canvasControlsSummary, publicCanvasControls } from "../../data/canvasControls";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { withBase } from "../../utils/paths";
+
+const controls = [...publicCanvasControls].sort((first, second) =>
+  first.name.localeCompare(second.name, "en-GB")
+);
+---
+
+<BaseLayout
+  title="Power Apps Canvas Controls Accessibility"
+  description="Accessibility recommendations and assessment metadata for Power Apps Canvas Controls."
+>
+  <nav class="govuk-breadcrumbs" aria-label="Breadcrumb">
+    <ol class="govuk-breadcrumbs__list">
+      <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href={withBase("/")}>Home</a>
+      </li>
+      <li class="govuk-breadcrumbs__list-item">Canvas Controls</li>
+    </ol>
+  </nav>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Power Apps</span>
+      <h1 class="govuk-heading-xl">Canvas Controls Accessibility</h1>
+      <p class="govuk-body-l">
+        Recommendations, guidance availability and assessment metadata for active Power Apps Canvas Controls.
+      </p>
+      <p class="govuk-body">
+        Recommendation is the main decision aid. Accessibility status is shown separately because a control can
+        be technically accessible while still needing amendments or caution.
+      </p>
+      <p class="govuk-body">
+        This catalogue publishes active controls only. Inactive records remain in the source dataset for audit
+        purposes and are excluded from the public list and summary counts.
+      </p>
+    </div>
+  </div>
+
+  <DatasetSummary summary={canvasControlsSummary} />
+
+  <section class="app-section" aria-labelledby="catalogue-heading">
+    <h2 class="govuk-heading-l" id="catalogue-heading">Controls catalogue</h2>
+    <ResultsCount count={controls.length} />
+
+    {
+      controls.length > 0 ? (
+        <>
+          <ControlResultsTable controls={controls} />
+          <div class="app-results-cards" aria-label="Active controls">
+            {controls.map((control) => (
+              <ControlResultCard control={control} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <EmptyState
+          heading="No active controls found"
+          message="The source dataset does not currently contain any active controls to publish."
+        />
+      )
+    }
+  </section>
+</BaseLayout>

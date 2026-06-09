@@ -1,0 +1,62 @@
+---
+import {
+  RECOMMENDATIONS,
+  type CanvasControlsSummary,
+  type Recommendation
+} from "../data/canvasControls";
+import RecommendationTag from "./RecommendationTag.astro";
+
+interface Props {
+  summary: CanvasControlsSummary;
+}
+
+const { summary } = Astro.props;
+
+const recommendationCounts = RECOMMENDATIONS.map((recommendation: Recommendation) => ({
+  recommendation,
+  count: summary.recommendationCounts[recommendation]
+}));
+---
+
+<section class="app-section app-dataset-summary" aria-labelledby="dataset-summary-heading">
+  <h2 class="govuk-heading-l" id="dataset-summary-heading">Dataset summary</h2>
+
+  <dl class="app-summary-grid">
+    <div class="app-summary-grid__item">
+      <dt>Total controls in source</dt>
+      <dd>{summary.sourceRecordCount}</dd>
+    </div>
+    <div class="app-summary-grid__item">
+      <dt>Active controls published</dt>
+      <dd>{summary.publicRecordCount}</dd>
+    </div>
+    <div class="app-summary-grid__item">
+      <dt>Last exported</dt>
+      <dd><time datetime={summary.exportedAtUtc}>{summary.exportedDate}</time></dd>
+    </div>
+    <div class="app-summary-grid__item">
+      <dt>Controls with guidance</dt>
+      <dd>{summary.withGuidanceCount}</dd>
+    </div>
+    <div class="app-summary-grid__item">
+      <dt>Accessibility team assessment dates</dt>
+      <dd>{summary.withAccessibilityTeamAssessmentCount}</dd>
+    </div>
+    <div class="app-summary-grid__item">
+      <dt>Platform team assessment dates</dt>
+      <dd>{summary.withPlatformTeamAssessmentCount}</dd>
+    </div>
+  </dl>
+
+  <h3 class="govuk-heading-m">Recommendation counts</h3>
+  <ul class="govuk-list app-recommendation-summary">
+    {
+      recommendationCounts.map(({ recommendation, count }) => (
+        <li class="app-recommendation-summary__item">
+          <RecommendationTag recommendation={recommendation} />
+          <span class="app-recommendation-summary__count">{count}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
