@@ -1,4 +1,5 @@
 .env
+.pnpm-store/
 site/.astro/
 site/dist/
 site/node_modules/
