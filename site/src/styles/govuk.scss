@@ -6,7 +6,13 @@
 @use "../../node_modules/govuk-frontend/dist/govuk/objects/grid";
 @use "../../node_modules/govuk-frontend/dist/govuk/objects/main-wrapper";
 @use "../../node_modules/govuk-frontend/dist/govuk/objects/width-container";
+@use "../../node_modules/govuk-frontend/dist/govuk/components/back-link";
 @use "../../node_modules/govuk-frontend/dist/govuk/components/breadcrumbs";
+@use "../../node_modules/govuk-frontend/dist/govuk/components/button";
+@use "../../node_modules/govuk-frontend/dist/govuk/components/checkboxes";
+@use "../../node_modules/govuk-frontend/dist/govuk/components/fieldset";
+@use "../../node_modules/govuk-frontend/dist/govuk/components/input";
+@use "../../node_modules/govuk-frontend/dist/govuk/components/label";
 @use "../../node_modules/govuk-frontend/dist/govuk/components/skip-link";
 @use "../../node_modules/govuk-frontend/dist/govuk/components/summary-list";
 @use "../../node_modules/govuk-frontend/dist/govuk/components/table";

@@ -1,0 +1,12 @@
+---
+import { withBase } from "../utils/paths";
+
+interface Props {
+  href: string;
+  text: string;
+}
+
+const { href, text } = Astro.props;
+---
+
+<a class="govuk-back-link" href={withBase(href)}>{text}</a>

@@ -1,0 +1,68 @@
+---
+import type { PublicCanvasControl } from "../data/canvasControls";
+import { formatDate } from "../data/canvasControls";
+import AssessmentDate from "./AssessmentDate.astro";
+import ControlTypeTag from "./ControlTypeTag.astro";
+import RecommendationTag from "./RecommendationTag.astro";
+
+interface Props {
+  control: PublicCanvasControl;
+}
+
+const { control } = Astro.props;
+const accessibleText = control.isAccessible ? "Yes" : "No";
+const previewText = control.isInPreview ? "In preview" : "Not in preview";
+const guidanceText = control.guidanceHtml ? "Guidance available" : "No guidance available";
+const modifiedDate = formatDate(control.modifiedOn);
+---
+
+<dl class="govuk-summary-list app-control-metadata">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Recommendation</dt>
+    <dd class="govuk-summary-list__value">
+      <RecommendationTag recommendation={control.recommendation} />
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Accessible</dt>
+    <dd class="govuk-summary-list__value">{accessibleText}</dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Control type</dt>
+    <dd class="govuk-summary-list__value">
+      <ControlTypeTag type={control.controlType} />
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Preview status</dt>
+    <dd class="govuk-summary-list__value">{previewText}</dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Accessibility team assessment</dt>
+    <dd class="govuk-summary-list__value">
+      <AssessmentDate
+        value={control.assessedByAccessibilityTeamOn}
+        missingText="Not assessed by accessibility team"
+      />
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Platform team assessment</dt>
+    <dd class="govuk-summary-list__value">
+      <AssessmentDate
+        value={control.assessedByPlatformTeamOn}
+        missingText="Not assessed by platform team"
+      />
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Last modified</dt>
+    <dd class="govuk-summary-list__value">
+      <time datetime={control.modifiedOn}>{modifiedDate}</time>
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Guidance</dt>
+    <dd class="govuk-summary-list__value">{guidanceText}</dd>
+  </div>
+</dl>

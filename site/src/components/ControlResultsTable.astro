@@ -3,6 +3,7 @@ import type { PublicCanvasControl } from "../data/canvasControls";
 import AssessmentDate from "./AssessmentDate.astro";
 import ControlTypeTag from "./ControlTypeTag.astro";
 import RecommendationTag from "./RecommendationTag.astro";
+import { withBase } from "../utils/paths";
 
 interface Props {
   controls: PublicCanvasControl[];
@@ -21,9 +22,25 @@ function previewText(value: boolean): string {
 function guidanceText(value: string | null): string {
   return value ? "Guidance available" : "No guidance available";
 }
+
+function controlUrl(control: PublicCanvasControl): string {
+  return withBase(`/canvas-controls/controls/${control.slug}/`);
+}
+
+function filterAttributes(control: PublicCanvasControl): Record<string, string> {
+  return {
+    "data-control-result": "",
+    "data-control-slug": control.slug,
+    "data-control-search-text": `${control.name} ${control.description ?? ""}`,
+    "data-control-recommendation": control.recommendation,
+    "data-control-type": control.controlType,
+    "data-control-preview": control.isInPreview ? "in-preview" : "not-in-preview",
+    "data-control-accessible": control.isAccessible ? "yes" : "no"
+  };
+}
 ---
 
-<div class="app-results-table-wrapper">
+<div class="app-results-table-wrapper" data-results-region>
   <table class="govuk-table app-results-table">
     <caption class="govuk-table__caption govuk-table__caption--m">Active controls</caption>
     <thead class="govuk-table__head">
@@ -40,9 +57,9 @@ function guidanceText(value: string | null): string {
     <tbody class="govuk-table__body">
       {
         controls.map((control) => (
-          <tr class="govuk-table__row" id={`control-${control.slug}`}>
+          <tr class="govuk-table__row" id={`control-${control.slug}`} {...filterAttributes(control)}>
             <th class="govuk-table__header app-results-table__name" scope="row">
-              <span>{control.name}</span>
+              <a class="govuk-link" href={controlUrl(control)}>{control.name}</a>
               <span class="govuk-body-s app-results-table__description">
                 {control.description ?? "No description available."}
               </span>

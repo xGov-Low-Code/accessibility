@@ -3,6 +3,7 @@ import type { PublicCanvasControl } from "../data/canvasControls";
 import AssessmentDate from "./AssessmentDate.astro";
 import ControlTypeTag from "./ControlTypeTag.astro";
 import RecommendationTag from "./RecommendationTag.astro";
+import { withBase } from "../utils/paths";
 
 interface Props {
   control: PublicCanvasControl;
@@ -12,10 +13,22 @@ const { control } = Astro.props;
 const accessibleText = control.isAccessible ? "Yes" : "No";
 const previewText = control.isInPreview ? "In preview" : "Not in preview";
 const guidanceText = control.guidanceHtml ? "Guidance available" : "No guidance available";
+const detailUrl = withBase(`/canvas-controls/controls/${control.slug}/`);
+const filterAttributes = {
+  "data-control-result": "",
+  "data-control-slug": control.slug,
+  "data-control-search-text": `${control.name} ${control.description ?? ""}`,
+  "data-control-recommendation": control.recommendation,
+  "data-control-type": control.controlType,
+  "data-control-preview": control.isInPreview ? "in-preview" : "not-in-preview",
+  "data-control-accessible": control.isAccessible ? "yes" : "no"
+};
 ---
 
-<article class="app-control-card" id={control.slug}>
-  <h3 class="govuk-heading-m app-control-card__heading">{control.name}</h3>
+<article class="app-control-card" id={control.slug} {...filterAttributes}>
+  <h3 class="govuk-heading-m app-control-card__heading">
+    <a class="govuk-link" href={detailUrl}>{control.name}</a>
+  </h3>
   <p class="govuk-body app-control-card__description">
     {control.description ?? "No description available."}
   </p>

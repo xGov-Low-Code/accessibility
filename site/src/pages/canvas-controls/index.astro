@@ -3,6 +3,7 @@ import ControlResultCard from "../../components/ControlResultCard.astro";
 import ControlResultsTable from "../../components/ControlResultsTable.astro";
 import DatasetSummary from "../../components/DatasetSummary.astro";
 import EmptyState from "../../components/EmptyState.astro";
+import FilterPanel from "../../components/FilterPanel.astro";
 import ResultsCount from "../../components/ResultsCount.astro";
 import { canvasControlsSummary, publicCanvasControls } from "../../data/canvasControls";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -48,16 +49,27 @@ const controls = [...publicCanvasControls].sort((first, second) =>
 
   <section class="app-section" aria-labelledby="catalogue-heading">
     <h2 class="govuk-heading-l" id="catalogue-heading">Controls catalogue</h2>
-    <ResultsCount count={controls.length} />
 
     {
       controls.length > 0 ? (
         <>
+          <FilterPanel />
+          <ResultsCount count={controls.length} id="controls-results-count" />
           <ControlResultsTable controls={controls} />
-          <div class="app-results-cards" aria-label="Active controls">
+          <div class="app-results-cards" aria-label="Active controls" data-results-region>
             {controls.map((control) => (
               <ControlResultCard control={control} />
             ))}
+          </div>
+          <div data-filter-empty-state hidden>
+            <EmptyState
+              heading="No controls match the current search and filters"
+              message="No active controls match the selected criteria."
+            >
+              <button class="govuk-button govuk-button--secondary" type="button" data-filter-reset>
+                Reset filters
+              </button>
+            </EmptyState>
           </div>
         </>
       ) : (
@@ -69,3 +81,234 @@ const controls = [...publicCanvasControls].sort((first, second) =>
     }
   </section>
 </BaseLayout>
+
+<script>
+  import {
+    filterCanvasControlRecords,
+    hasCanvasControlFilters,
+    type CanvasControlFilterRecord,
+    type CanvasControlFilterState
+  } from "../../scripts/canvasControlFilters";
+
+  const form = document.querySelector<HTMLFormElement>("[data-controls-filter-form]");
+  const searchInput = form?.querySelector<HTMLInputElement>("[data-filter-search]");
+  const resultElements = Array.from(document.querySelectorAll<HTMLElement>("[data-control-result]"));
+  const resultRegions = Array.from(document.querySelectorAll<HTMLElement>("[data-results-region]"));
+  const resultsCount = document.querySelector<HTMLElement>("[data-results-count]");
+  const emptyState = document.querySelector<HTMLElement>("[data-filter-empty-state]");
+
+  if (form && searchInput && resultsCount) {
+    const filterForm = form;
+    const filterSearchInput = searchInput;
+    const resultsCountElement = resultsCount;
+    const recordsBySlug = new Map<string, CanvasControlFilterRecord>();
+    const elementsBySlug = new Map<string, HTMLElement[]>();
+
+    for (const element of resultElements) {
+      const record = readRecord(element);
+
+      if (!record) {
+        continue;
+      }
+
+      recordsBySlug.set(record.slug, record);
+      elementsBySlug.set(record.slug, [...(elementsBySlug.get(record.slug) ?? []), element]);
+    }
+
+    const records = [...recordsBySlug.values()];
+
+    filterForm.hidden = false;
+    restoreStateFromUrl();
+
+    filterForm.addEventListener("input", updateFromForm);
+    filterForm.addEventListener("change", updateFromForm);
+    filterForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      updateFromForm();
+    });
+
+    document.addEventListener("click", (event) => {
+      const resetButton =
+        event.target instanceof Element ? event.target.closest("[data-filter-reset]") : null;
+
+      if (!resetButton) {
+        return;
+      }
+
+      event.preventDefault();
+      writeStateToForm({
+        query: "",
+        recommendations: [],
+        controlTypes: [],
+        preview: [],
+        accessible: []
+      });
+      updateFromForm();
+      filterSearchInput.focus();
+    });
+
+    window.addEventListener("popstate", restoreStateFromUrl);
+
+    function readRecord(element: HTMLElement): CanvasControlFilterRecord | null {
+      const {
+        controlSlug,
+        controlSearchText,
+        controlRecommendation,
+        controlType,
+        controlPreview,
+        controlAccessible
+      } = element.dataset;
+
+      if (
+        !controlSlug ||
+        !controlSearchText ||
+        !controlRecommendation ||
+        !controlType ||
+        !controlPreview ||
+        !controlAccessible
+      ) {
+        return null;
+      }
+
+      return {
+        slug: controlSlug,
+        searchText: controlSearchText,
+        recommendation: controlRecommendation,
+        controlType,
+        preview: controlPreview,
+        accessible: controlAccessible
+      };
+    }
+
+    function updateFromForm(): void {
+      const state = readStateFromForm();
+
+      applyFilters(state);
+      writeStateToUrl(state);
+    }
+
+    function restoreStateFromUrl(): void {
+      const state = readStateFromUrl();
+
+      writeStateToForm(state);
+      applyFilters(state);
+    }
+
+    function applyFilters(state: CanvasControlFilterState): void {
+      const matchingRecords = filterCanvasControlRecords(records, state);
+      const matchingSlugs = new Set(matchingRecords.map((record) => record.slug));
+
+      for (const [slug, elements] of elementsBySlug) {
+        const isMatch = matchingSlugs.has(slug);
+
+        for (const element of elements) {
+          element.hidden = !isMatch;
+        }
+      }
+
+      const hasMatches = matchingRecords.length > 0;
+
+      for (const region of resultRegions) {
+        region.hidden = !hasMatches;
+      }
+
+      if (emptyState) {
+        emptyState.hidden = hasMatches;
+      }
+
+      updateResultsCount(matchingRecords.length, state);
+    }
+
+    function updateResultsCount(count: number, state: CanvasControlFilterState): void {
+      const strong = document.createElement("strong");
+      const noun = count === 1 ? "control" : "controls";
+      const verb = count === 1 ? "matches" : "match";
+      const message = hasCanvasControlFilters(state)
+        ? ` ${noun} ${verb} these filters.`
+        : ` active ${noun} shown.`;
+
+      strong.textContent = String(count);
+      resultsCountElement.replaceChildren(strong, document.createTextNode(message));
+    }
+
+    function readStateFromForm(): CanvasControlFilterState {
+      const formData = new FormData(filterForm);
+
+      return {
+        query: String(formData.get("q") ?? ""),
+        recommendations: formData.getAll("recommendation").map(String),
+        controlTypes: formData.getAll("type").map(String),
+        preview: formData.getAll("preview").map(String),
+        accessible: formData.getAll("accessible").map(String)
+      };
+    }
+
+    function readStateFromUrl(): CanvasControlFilterState {
+      const params = new URLSearchParams(window.location.search);
+
+      return {
+        query: params.get("q") ?? "",
+        recommendations: readValidQueryValues(params, "recommendation"),
+        controlTypes: readValidQueryValues(params, "type"),
+        preview: readValidQueryValues(params, "preview"),
+        accessible: readValidQueryValues(params, "accessible")
+      };
+    }
+
+    function readValidQueryValues(params: URLSearchParams, name: string): string[] {
+      const validValues = new Set(getNamedInputs(name).map((input) => input.value));
+
+      return params.getAll(name).filter((value) => validValues.has(value));
+    }
+
+    function writeStateToForm(state: CanvasControlFilterState): void {
+      filterSearchInput.value = state.query;
+      setCheckedValues("recommendation", state.recommendations);
+      setCheckedValues("type", state.controlTypes);
+      setCheckedValues("preview", state.preview);
+      setCheckedValues("accessible", state.accessible);
+    }
+
+    function setCheckedValues(name: string, values: string[]): void {
+      const selectedValues = new Set(values);
+
+      for (const input of getNamedInputs(name)) {
+        input.checked = selectedValues.has(input.value);
+      }
+    }
+
+    function getNamedInputs(name: string): HTMLInputElement[] {
+      return Array.from(filterForm.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`));
+    }
+
+    function writeStateToUrl(state: CanvasControlFilterState): void {
+      const url = new URL(window.location.href);
+      const params = new URLSearchParams(url.search);
+
+      params.delete("q");
+      params.delete("recommendation");
+      params.delete("type");
+      params.delete("preview");
+      params.delete("accessible");
+
+      if (state.query.trim()) {
+        params.set("q", state.query.trim());
+      }
+
+      appendValues(params, "recommendation", state.recommendations);
+      appendValues(params, "type", state.controlTypes);
+      appendValues(params, "preview", state.preview);
+      appendValues(params, "accessible", state.accessible);
+
+      const query = params.toString();
+
+      window.history.replaceState(null, "", `${url.pathname}${query ? `?${query}` : ""}${url.hash}`);
+    }
+
+    function appendValues(params: URLSearchParams, name: string, values: string[]): void {
+      for (const value of values) {
+        params.append(name, value);
+      }
+    }
+  }
+</script>

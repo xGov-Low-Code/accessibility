@@ -1,0 +1,45 @@
+---
+import type { GetStaticPaths } from "astro";
+import BackLink from "../../../components/BackLink.astro";
+import ControlMetadataList from "../../../components/ControlMetadataList.astro";
+import GuidanceBlock from "../../../components/GuidanceBlock.astro";
+import type { PublicCanvasControl } from "../../../data/canvasControls";
+import { publicCanvasControls } from "../../../data/canvasControls";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+export const getStaticPaths = (() =>
+  publicCanvasControls.map((control) => ({
+    params: { slug: control.slug },
+    props: { control }
+  }))) satisfies GetStaticPaths;
+
+const { control } = Astro.props as { control: PublicCanvasControl };
+const pageTitle = `${control.name} - Canvas Control`;
+const description = control.description
+  ? `${control.name}: ${control.description}`
+  : `Accessibility recommendation and assessment metadata for the ${control.name} Power Apps Canvas Control.`;
+---
+
+<BaseLayout title={pageTitle} description={description}>
+  <BackLink href="/canvas-controls/" text="Back to Canvas Controls" />
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Canvas Control</span>
+      <h1 class="govuk-heading-xl">{control.name}</h1>
+      <p class="govuk-body-l">
+        {control.description ?? "No description is available for this control."}
+      </p>
+    </div>
+  </div>
+
+  <section class="app-section" aria-labelledby="metadata-heading">
+    <h2 class="govuk-heading-l" id="metadata-heading">Control details</h2>
+    <ControlMetadataList control={control} />
+  </section>
+
+  <section class="app-section" aria-labelledby="guidance-heading">
+    <h2 class="govuk-heading-l" id="guidance-heading">Guidance</h2>
+    <GuidanceBlock guidanceHtml={control.guidanceHtml} />
+  </section>
+</BaseLayout>

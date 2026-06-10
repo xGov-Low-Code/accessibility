@@ -1,12 +1,13 @@
 ---
 interface Props {
   count: number;
+  id?: string;
 }
 
-const { count } = Astro.props;
+const { count, id } = Astro.props;
 const noun = count === 1 ? "control" : "controls";
 ---
 
-<p class="govuk-body app-results-count" aria-live="polite">
+<p class="govuk-body app-results-count" id={id} aria-live="polite" data-results-count>
   <strong>{count}</strong> active {noun} shown.
 </p>

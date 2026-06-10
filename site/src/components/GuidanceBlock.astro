@@ -1,0 +1,15 @@
+---
+interface Props {
+  guidanceHtml: string | null;
+}
+
+const { guidanceHtml } = Astro.props;
+---
+
+{
+  guidanceHtml ? (
+    <div class="app-guidance-block" set:html={guidanceHtml} />
+  ) : (
+    <p class="govuk-body app-muted">No guidance is available for this control.</p>
+  )
+}
