@@ -15,7 +15,9 @@ The first release will be a static GitHub Pages site built from `site/` with Ast
 - Astro `base`: `/accessibility`
 - Repository remote: `https://github.com/xGov-Low-Code/accessibility.git`
 
-The first release is limited to the Power Apps Canvas Controls accessibility catalogue. It will show public guidance, assessment metadata, recommendation status, and active-record summary counts from the source dataset. It will not include screenshots, screenshot placeholders, additional datasets, GitHub Actions deployment, or official GOV.UK service branding in the foundation slice.
+The first release is limited to the Power Apps Canvas Controls accessibility catalogue. It will show public guidance, assessment metadata, recommendation status, and active-record summary counts from the source dataset. It will not include screenshots, screenshot placeholders, additional datasets, or official GOV.UK service branding in the foundation slice.
+
+Deployment uses GitHub Actions to build `site/` and publish `site/dist` to GitHub Pages. The repository Pages source must be configured to use GitHub Actions in the GitHub Pages settings.
 
 ## Data
 
@@ -51,6 +53,30 @@ Use these checks before publishing changes:
 ```powershell
 cd site
 pnpm run check
+pnpm run test
+pnpm run test:e2e
 pnpm run build
 pnpm run preview
 ```
+
+The end-to-end checks build the static site, serve the built output under `/accessibility/`, run
+Playwright smoke tests for the home page, Canvas Controls catalogue and a generated detail page, and
+run axe checks on those key pages.
+
+## Manual accessibility checklist
+
+Use this checklist before launch and after significant changes to the public pages:
+
+- Keyboard: tab from the browser address bar through the skip link, header, catalogue filters, reset
+  button, result links, detail-page back link and footer links. Check focus is visible and order is
+  logical.
+- Filters: use only the keyboard to search, select and clear filters. Confirm the result count changes
+  visibly and the empty state can be reset.
+- Zoom and mobile: check the home page, catalogue and one detail page at 200% zoom and around 390px
+  viewport width. Confirm text, filters, cards and guidance do not overlap or require two-dimensional
+  scrolling except for the desktop table fallback.
+- Forced colours: check the same pages in Windows high contrast / forced-colours mode. Confirm links,
+  tags, focus indicators, form controls and selected checkboxes remain distinguishable without relying
+  on colour alone.
+- Screen reader spot check, if NVDA is available: confirm page titles, headings, landmarks, form labels,
+  table caption and result-count updates are announced clearly.

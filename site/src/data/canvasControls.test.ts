@@ -2,12 +2,20 @@ import { describe, expect, test } from "vitest";
 import {
   RECOMMENDATION_METADATA,
   RECOMMENDATIONS,
+  type SourceCanvasControl,
   canvasControlsSummary,
   formatDate,
   publicCanvasControls,
   sanitiseGuidanceHtml,
   sourceCanvasControlsDataset
 } from "./canvasControls";
+
+const SOURCE_DATE_FIELDS = [
+  "assessedByAccessibilityTeamOn",
+  "assessedByPlatformTeamOn",
+  "createdOn",
+  "modifiedOn"
+] satisfies Array<keyof SourceCanvasControl>;
 
 describe("Canvas Controls data contract", () => {
   test("source recordCount matches the actual source JSON record count", () => {
@@ -42,6 +50,18 @@ describe("Canvas Controls data contract", () => {
 
   test("all recommendation values have display metadata", () => {
     expect(Object.keys(RECOMMENDATION_METADATA).sort()).toEqual([...RECOMMENDATIONS].sort());
+  });
+
+  test("active source recommendation values are known before publishing", () => {
+    const activeRecommendationValues = sourceCanvasControlsDataset.records
+      .filter((record) => record.status === "Active")
+      .map((record) => record.recommendation?.trim() || "Not assessed");
+
+    expect(activeRecommendationValues.length).toBeGreaterThan(0);
+
+    for (const recommendation of activeRecommendationValues) {
+      expect(RECOMMENDATIONS).toContain(recommendation);
+    }
   });
 
   test("generated slugs are unique and include name, control type, and short id suffix", () => {
@@ -94,6 +114,16 @@ describe("Canvas Controls data contract", () => {
   test("dates are formatted consistently in UK English using UTC", () => {
     expect(formatDate("2026-01-15T00:00:00Z")).toBe("15 January 2026");
     expect(formatDate(null)).toBeNull();
+  });
+
+  test("source dates stay parseable because assessment and freshness dates are published", () => {
+    for (const record of sourceCanvasControlsDataset.records) {
+      for (const field of SOURCE_DATE_FIELDS) {
+        const value = record[field];
+
+        expect(value === null || !Number.isNaN(Date.parse(value))).toBe(true);
+      }
+    }
   });
 
   test("guidance sanitisation removes wrappers, unsafe attributes, scripts, and broken heading order", () => {

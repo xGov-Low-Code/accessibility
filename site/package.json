@@ -8,6 +8,7 @@
     "check": "astro check",
     "build": "astro build",
     "test": "vitest run",
+    "test:e2e": "astro build && playwright test",
     "preview": "astro preview"
   },
   "dependencies": {
@@ -17,6 +18,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
+    "@axe-core/playwright": "^4.11.3",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.2",
     "sass-embedded": "1.100.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.8"
