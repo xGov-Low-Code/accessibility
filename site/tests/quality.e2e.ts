@@ -171,6 +171,27 @@ test.describe("built site smoke checks", () => {
       "href",
       `${basePath}/canvas-controls/`
     );
+    await expect(page.getByRole("link", { name: "About this community site" })).toHaveAttribute(
+      "href",
+      `${basePath}/about/`
+    );
+  });
+
+  test("public documentation pages explain launch readiness without screenshots", async ({ page }) => {
+    for (const [route, heading] of [
+      [`${basePath}/about/`, "About xGov Low-Code Accessibility"],
+      [`${basePath}/data/`, "Data"],
+      [`${basePath}/accessibility/`, "Accessibility statement"]
+    ] as const) {
+      await page.goto(pageUrl(route));
+
+      await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
+      await expect(page.getByText("Not an official GOV.UK service", { exact: true })).toBeVisible();
+      await expect(page.locator("img")).toHaveCount(0);
+    }
+
+    await expect(page.getByText("compliance status against WCAG 2.2 AA")).toBeVisible();
+    await expect(page.getByText("A public contact route for accessibility feedback")).toBeVisible();
   });
 
   test("catalogue renders active controls and client filters without losing the base path", async ({ page }) => {
@@ -215,6 +236,9 @@ test.describe("built site smoke checks", () => {
 test.describe("axe accessibility checks", () => {
   for (const [name, route] of [
     ["home page", `${basePath}/`],
+    ["about page", `${basePath}/about/`],
+    ["data page", `${basePath}/data/`],
+    ["accessibility page", `${basePath}/accessibility/`],
     ["catalogue page", `${basePath}/canvas-controls/`],
     ["control detail page", `${basePath}/canvas-controls/controls/${detailControl.slug}/`]
   ] as const) {

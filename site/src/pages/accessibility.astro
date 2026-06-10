@@ -1,0 +1,124 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../utils/paths";
+---
+
+<BaseLayout
+  title="Accessibility"
+  description="Accessibility statement ownership, review cadence and launch-readiness blockers."
+>
+  <nav class="govuk-breadcrumbs" aria-label="Breadcrumb">
+    <ol class="govuk-breadcrumbs__list">
+      <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href={withBase("/")}>Home</a>
+      </li>
+      <li class="govuk-breadcrumbs__list-item">Accessibility</li>
+    </ol>
+  </nav>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Launch readiness</span>
+      <h1 class="govuk-heading-xl">Accessibility statement</h1>
+      <p class="govuk-body-l">
+        This page records accessibility statement ownership, review expectations and the remaining
+        facts needed before the site can launch with a final statement.
+      </p>
+      <p class="govuk-body">
+        Required statement details that have not been verified are listed as launch blockers. They
+        have not been guessed.
+      </p>
+    </div>
+  </div>
+
+  <section class="app-section" aria-labelledby="scope-heading">
+    <h2 class="govuk-heading-l" id="scope-heading">Scope and ownership</h2>
+    <p class="govuk-body">
+      This statement applies to <code>https://xgov-low-code.github.io/accessibility/</code>.
+    </p>
+    <p class="govuk-body">
+      The accessibility statement and review process are owned by the Defra Power Platform Service
+      Team and Defra Accessibility Team.
+    </p>
+    <p class="govuk-body">
+      The statement must be reviewed before launch, after significant site changes, and at least
+      every 12 months.
+    </p>
+  </section>
+
+  <section class="app-section" aria-labelledby="current-evidence-heading">
+    <h2 class="govuk-heading-l" id="current-evidence-heading">Current accessibility evidence</h2>
+    <p class="govuk-body">
+      The site is being checked against the Web Content Accessibility Guidelines (WCAG) 2.2 AA
+      standard.
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Automated axe checks cover the home page, catalogue and one generated detail page.</li>
+      <li>Playwright smoke checks cover base-path routing, filters, detail pages and screenshot absence.</li>
+      <li>The README includes manual keyboard, zoom, mobile, forced-colours and screen reader checks.</li>
+    </ul>
+    <p class="govuk-body">
+      A final compliance status has not yet been approved for publication.
+    </p>
+  </section>
+
+  <section class="app-section" aria-labelledby="blockers-heading">
+    <h2 class="govuk-heading-l" id="blockers-heading">Launch blockers for the final statement</h2>
+    <div class="app-empty-state">
+      <p class="govuk-body">
+        The final accessibility statement must not be published until the statement owners have
+        supplied or approved these details:
+      </p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>compliance status against WCAG 2.2 AA</li>
+        <li>known non-compliances, including WCAG references and fix plans, or confirmation that there are none</li>
+        <li>any disproportionate burden or exempt content claims, or confirmation that there are none</li>
+        <li>feedback and alternative-format contact details, including response expectations</li>
+        <li>the relevant enforcement route for the publishing organisation</li>
+        <li>final preparation date, review date and test date</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="app-section" aria-labelledby="feedback-heading">
+    <h2 class="govuk-heading-l" id="feedback-heading">Feedback and contact information</h2>
+    <p class="govuk-body">
+      A public contact route for accessibility feedback and alternative-format requests has not yet
+      been confirmed. This is a launch blocker for the final statement.
+    </p>
+  </section>
+
+  <section class="app-section" aria-labelledby="enforcement-heading">
+    <h2 class="govuk-heading-l" id="enforcement-heading">Enforcement route</h2>
+    <p class="govuk-body">
+      The final statement must include the relevant enforcement route required by public sector
+      accessibility statement guidance. The route has not yet been confirmed for this site.
+    </p>
+  </section>
+
+  <section class="app-section" aria-labelledby="guidance-heading">
+    <h2 class="govuk-heading-l" id="guidance-heading">Guidance used</h2>
+    <p class="govuk-body">
+      This page was prepared using GOV.UK guidance on making websites accessible and publishing an
+      accessibility statement, and the GOV.UK sample accessibility statement.
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        <a
+          class="govuk-link"
+          href="https://www.gov.uk/guidance/make-your-website-or-app-accessible-and-publish-an-accessibility-statement"
+        >
+          Make your website or app accessible and publish an accessibility statement
+        </a>
+      </li>
+      <li>
+        <a
+          class="govuk-link"
+          href="https://www.gov.uk/government/publications/sample-accessibility-statement"
+        >
+          Sample accessibility statement
+        </a>
+      </li>
+    </ul>
+  </section>
+</BaseLayout>

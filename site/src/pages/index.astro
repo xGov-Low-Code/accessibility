@@ -51,4 +51,13 @@ import { withBase } from "../utils/paths";
       <li><RecommendationTag recommendation="Not assessed" /></li>
     </ul>
   </section>
+
+  <section class="app-section" aria-labelledby="project-heading">
+    <h2 class="govuk-heading-l" id="project-heading">Project information</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href={withBase("/about/")}>About this community site</a></li>
+      <li><a class="govuk-link" href={withBase("/data/")}>Data source and refresh process</a></li>
+      <li><a class="govuk-link" href={withBase("/accessibility/")}>Accessibility statement readiness</a></li>
+    </ul>
+  </section>
 </BaseLayout>

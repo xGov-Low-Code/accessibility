@@ -6,9 +6,9 @@ This repository is currently planning a static GitHub Pages site for Power Apps 
 
 The canonical implementation plan is [agent-docs/2026-06-09-github-pages-site-plan.md](agent-docs/2026-06-09-github-pages-site-plan.md).
 
-## Planned site
+## Site
 
-The first release will be a static GitHub Pages site built from `site/` with Astro and TypeScript.
+The first release is a static GitHub Pages site built from `site/` with Astro and TypeScript.
 
 - Expected public URL: `https://xgov-low-code.github.io/accessibility/`
 - Astro `site`: `https://xgov-low-code.github.io`
@@ -17,7 +17,22 @@ The first release will be a static GitHub Pages site built from `site/` with Ast
 
 The first release is limited to the Power Apps Canvas Controls accessibility catalogue. It will show public guidance, assessment metadata, recommendation status, and active-record summary counts from the source dataset. It will not include screenshots, screenshot placeholders, additional datasets, or official GOV.UK service branding in the foundation slice.
 
-Deployment uses GitHub Actions to build `site/` and publish `site/dist` to GitHub Pages. The repository Pages source must be configured to use GitHub Actions in the GitHub Pages settings.
+Public routes:
+
+- `/` introduces the project and links to available guidance.
+- `/canvas-controls/` lists active Canvas Controls with search and filters.
+- `/canvas-controls/controls/[slug]/` gives one active control a stable detail page.
+- `/about/` explains community status, ownership and first-release scope.
+- `/data/` explains the source dataset, export date, refresh cadence and publication process.
+- `/accessibility/` records accessibility statement ownership, review cadence and launch blockers.
+
+## Deployment
+
+Deployment uses GitHub Actions to build `site/` and publish `site/dist` to GitHub Pages. Before the first deployment, the repository Pages source must be configured to use GitHub Actions in the GitHub Pages settings.
+
+If the workflow fails at `actions/configure-pages` with `Get Pages site failed`, GitHub Pages has not been enabled for the repository yet. Set this once in GitHub under `Settings` > `Pages` > `Build and deployment` > `Source`: `GitHub Actions`, then re-run the failed workflow. The `actions/configure-pages` automatic enablement option requires an admin-capable token rather than the default `GITHUB_TOKEN`, so this workflow avoids storing a higher-privilege deployment token.
+
+The deployment workflow runs on pushes to `main` and on manual dispatch. It installs dependencies from `site/`, runs Astro checks, data contract tests, Playwright and axe smoke checks, builds the site, uploads `site/dist`, and deploys through GitHub Pages.
 
 ## Data
 
@@ -32,11 +47,20 @@ First-release rules:
 - Dataverse `screenshotUrl` values are not rendered
 - screenshots are coming soon but are not rendered until static image assets and suitable alt text are available
 
+Data update process:
+
+1. The exported JSON updates automatically each day from the Defra tenant.
+2. Data contract tests validate refreshed data before publication.
+3. Generated summary counts are reviewed through the build output.
+4. The site publishes through the GitHub Pages deployment workflow after checks pass.
+
 ## Ownership
 
 The accessibility statement and review process are owned by the Defra Power Platform Service Team and Defra Accessibility Team.
 
 The accessibility statement is reviewed before launch, after significant site changes, and at least every 12 months.
+
+The final accessibility statement still needs owner-approved compliance status, known non-compliances or confirmation there are none, any disproportionate burden or exemption decisions, feedback contact details, enforcement route, preparation date, review date and test date before launch.
 
 ## Development
 
@@ -62,6 +86,8 @@ pnpm run preview
 The end-to-end checks build the static site, serve the built output under `/accessibility/`, run
 Playwright smoke tests for the home page, Canvas Controls catalogue and a generated detail page, and
 run axe checks on those key pages.
+
+Contribution notes are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Manual accessibility checklist
 

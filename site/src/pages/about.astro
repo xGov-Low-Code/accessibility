@@ -1,0 +1,77 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../utils/paths";
+---
+
+<BaseLayout
+  title="About"
+  description="About the xGov Low-Code Accessibility site, its community status and first-release scope."
+>
+  <nav class="govuk-breadcrumbs" aria-label="Breadcrumb">
+    <ol class="govuk-breadcrumbs__list">
+      <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href={withBase("/")}>Home</a>
+      </li>
+      <li class="govuk-breadcrumbs__list-item">About</li>
+    </ol>
+  </nav>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Work in progress</span>
+      <h1 class="govuk-heading-xl">About xGov Low-Code Accessibility</h1>
+      <p class="govuk-body-l">
+        This site publishes community-maintained accessibility artefacts and guidance for the xGov
+        Low-Code community.
+      </p>
+      <p class="govuk-body">
+        It is not an official GOV.UK service. The design uses GOV.UK Frontend for accessible
+        typography, spacing and form patterns, but avoids GOV.UK crown assets, official service
+        headers and service-style framing.
+      </p>
+    </div>
+  </div>
+
+  <section class="app-section" aria-labelledby="scope-heading">
+    <h2 class="govuk-heading-l" id="scope-heading">First-release scope</h2>
+    <p class="govuk-body">
+      The first release covers the Power Apps Canvas Controls accessibility catalogue. It helps
+      makers find controls, compare recommendations, distinguish accessibility status from
+      recommendation status, and read available guidance.
+    </p>
+    <p class="govuk-body">
+      Source datasets stay under root <code>data/&lt;subject&gt;/</code> directories. The static
+      site is built from <code>site/</code> and published through GitHub Pages.
+    </p>
+    <p class="govuk-body">
+      Screenshots are coming soon, but they are not rendered until static image assets and suitable
+      alt text are available. The site does not publish screenshot placeholders.
+    </p>
+  </section>
+
+  <section class="app-section" aria-labelledby="ownership-heading">
+    <h2 class="govuk-heading-l" id="ownership-heading">Ownership and review</h2>
+    <p class="govuk-body">
+      The accessibility statement and review process are owned by the Defra Power Platform Service
+      Team and Defra Accessibility Team.
+    </p>
+    <p class="govuk-body">
+      The statement must be reviewed before launch, after significant site changes, and at least
+      every 12 months.
+    </p>
+  </section>
+
+  <section class="app-section" aria-labelledby="more-heading">
+    <h2 class="govuk-heading-l" id="more-heading">More information</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href={withBase("/canvas-controls/")}>Canvas Controls catalogue</a></li>
+      <li><a class="govuk-link" href={withBase("/data/")}>Data source and refresh process</a></li>
+      <li><a class="govuk-link" href={withBase("/accessibility/")}>Accessibility statement readiness</a></li>
+      <li>
+        <a class="govuk-link" href="https://github.com/xGov-Low-Code/accessibility">
+          GitHub repository
+        </a>
+      </li>
+    </ul>
+  </section>
+</BaseLayout>
