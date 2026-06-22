@@ -5,7 +5,7 @@ import { withBase } from "../utils/paths";
 
 <BaseLayout
   title="Accessibility"
-  description="Accessibility statement ownership, review cadence and launch-readiness blockers."
+  description="Accessibility statement preparation, evidence and remaining gaps."
 >
   <nav class="govuk-breadcrumbs" aria-label="Breadcrumb">
     <ol class="govuk-breadcrumbs__list">
@@ -21,12 +21,8 @@ import { withBase } from "../utils/paths";
       <span class="govuk-caption-l">Launch readiness</span>
       <h1 class="govuk-heading-xl">Accessibility statement</h1>
       <p class="govuk-body-l">
-        This page records accessibility statement ownership, review expectations and the remaining
-        facts needed before the site can launch with a final statement.
-      </p>
-      <p class="govuk-body">
-        Required statement details that have not been verified are listed as launch blockers. They
-        have not been guessed.
+        This page records the evidence gathered so far and the details still needed for a final
+        accessibility statement.
       </p>
     </div>
   </div>
@@ -34,15 +30,9 @@ import { withBase } from "../utils/paths";
   <section class="app-section" aria-labelledby="scope-heading">
     <h2 class="govuk-heading-l" id="scope-heading">Scope and ownership</h2>
     <p class="govuk-body">
-      This statement applies to <code>https://xgov-low-code.github.io/accessibility/</code>.
-    </p>
-    <p class="govuk-body">
-      The accessibility statement and review process are owned by the Defra Power Platform Service
-      Team and Defra Accessibility Team.
-    </p>
-    <p class="govuk-body">
-      The statement must be reviewed before launch, after significant site changes, and at least
-      every 12 months.
+      This statement applies to <code>https://xgov-low-code.github.io/accessibility/</code>. The
+      Defra Power Platform Service Team and Defra Accessibility Team own the statement and review
+      process.
     </p>
   </section>
 
@@ -62,12 +52,11 @@ import { withBase } from "../utils/paths";
     </p>
   </section>
 
-  <section class="app-section" aria-labelledby="blockers-heading">
-    <h2 class="govuk-heading-l" id="blockers-heading">Launch blockers for the final statement</h2>
+  <section class="app-section" aria-labelledby="gaps-heading">
+    <h2 class="govuk-heading-l" id="gaps-heading">Statement gaps</h2>
     <div class="app-empty-state">
       <p class="govuk-body">
-        The final accessibility statement must not be published until the statement owners have
-        supplied or approved these details:
+        The final statement still needs these owner-approved details:
       </p>
       <ul class="govuk-list govuk-list--bullet">
         <li>compliance status against WCAG 2.2 AA</li>
@@ -80,24 +69,8 @@ import { withBase } from "../utils/paths";
     </div>
   </section>
 
-  <section class="app-section" aria-labelledby="feedback-heading">
-    <h2 class="govuk-heading-l" id="feedback-heading">Feedback and contact information</h2>
-    <p class="govuk-body">
-      A public contact route for accessibility feedback and alternative-format requests has not yet
-      been confirmed. This is a launch blocker for the final statement.
-    </p>
-  </section>
-
-  <section class="app-section" aria-labelledby="enforcement-heading">
-    <h2 class="govuk-heading-l" id="enforcement-heading">Enforcement route</h2>
-    <p class="govuk-body">
-      The final statement must include the relevant enforcement route required by public sector
-      accessibility statement guidance. The route has not yet been confirmed for this site.
-    </p>
-  </section>
-
   <section class="app-section" aria-labelledby="guidance-heading">
-    <h2 class="govuk-heading-l" id="guidance-heading">Guidance used</h2>
+    <h2 class="govuk-heading-l" id="guidance-heading">Reference guidance</h2>
     <p class="govuk-body">
       This page was prepared using GOV.UK guidance on making websites accessible and publishing an
       accessibility statement, and the GOV.UK sample accessibility statement.

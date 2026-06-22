@@ -191,7 +191,7 @@ test.describe("built site smoke checks", () => {
     }
 
     await expect(page.getByText("compliance status against WCAG 2.2 AA")).toBeVisible();
-    await expect(page.getByText("A public contact route for accessibility feedback")).toBeVisible();
+    await expect(page.getByText("feedback and alternative-format contact details")).toBeVisible();
   });
 
   test("catalogue renders active controls and client filters without losing the base path", async ({ page }) => {

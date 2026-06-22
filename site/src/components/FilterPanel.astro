@@ -13,8 +13,6 @@ const accessibilityOptions = [
 ---
 
 <form class="app-filter-panel" method="get" data-controls-filter-form hidden>
-  <h3 class="govuk-heading-m app-filter-panel__heading">Search and filters</h3>
-
   <div class="govuk-form-group app-filter-panel__search">
     <label class="govuk-label govuk-label--s" for="control-search">Search controls</label>
     <input
@@ -27,103 +25,110 @@ const accessibilityOptions = [
     />
   </div>
 
-  <div class="app-filter-panel__groups">
-    <fieldset class="govuk-fieldset app-filter-panel__group">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Recommendation</legend>
-      <div class="govuk-checkboxes govuk-checkboxes--small">
-        {
-          RECOMMENDATIONS.map((recommendation) => (
-            <div class="govuk-checkboxes__item">
-              <input
-                class="govuk-checkboxes__input"
-                id={`filter-recommendation-${recommendation.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                name="recommendation"
-                type="checkbox"
-                value={recommendation}
-              />
-              <label
-                class="govuk-label govuk-checkboxes__label"
-                for={`filter-recommendation-${recommendation.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-              >
-                {recommendation}
-              </label>
-            </div>
-          ))
-        }
-      </div>
-    </fieldset>
+  <details class="govuk-details app-filter-panel__details" data-filter-details>
+    <summary class="govuk-details__summary">
+      <span class="govuk-details__summary-text">Filter results</span>
+    </summary>
+    <div class="govuk-details__text app-filter-panel__details-body">
+      <div class="app-filter-panel__groups">
+        <fieldset class="govuk-fieldset app-filter-panel__group">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Recommendation</legend>
+          <div class="govuk-checkboxes govuk-checkboxes--small">
+            {
+              RECOMMENDATIONS.map((recommendation) => (
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id={`filter-recommendation-${recommendation.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                    name="recommendation"
+                    type="checkbox"
+                    value={recommendation}
+                  />
+                  <label
+                    class="govuk-label govuk-checkboxes__label"
+                    for={`filter-recommendation-${recommendation.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                  >
+                    {recommendation}
+                  </label>
+                </div>
+              ))
+            }
+          </div>
+        </fieldset>
 
-    <fieldset class="govuk-fieldset app-filter-panel__group">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Control type</legend>
-      <div class="govuk-checkboxes govuk-checkboxes--small">
-        {
-          controlTypes.map((type) => (
-            <div class="govuk-checkboxes__item">
-              <input
-                class="govuk-checkboxes__input"
-                id={`filter-type-${type.toLowerCase()}`}
-                name="type"
-                type="checkbox"
-                value={type}
-              />
-              <label class="govuk-label govuk-checkboxes__label" for={`filter-type-${type.toLowerCase()}`}>
-                {type}
-              </label>
-            </div>
-          ))
-        }
-      </div>
-    </fieldset>
+        <fieldset class="govuk-fieldset app-filter-panel__group">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Control type</legend>
+          <div class="govuk-checkboxes govuk-checkboxes--small">
+            {
+              controlTypes.map((type) => (
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id={`filter-type-${type.toLowerCase()}`}
+                    name="type"
+                    type="checkbox"
+                    value={type}
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" for={`filter-type-${type.toLowerCase()}`}>
+                    {type}
+                  </label>
+                </div>
+              ))
+            }
+          </div>
+        </fieldset>
 
-    <fieldset class="govuk-fieldset app-filter-panel__group">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Preview status</legend>
-      <div class="govuk-checkboxes govuk-checkboxes--small">
-        {
-          previewOptions.map((option) => (
-            <div class="govuk-checkboxes__item">
-              <input
-                class="govuk-checkboxes__input"
-                id={`filter-preview-${option.value}`}
-                name="preview"
-                type="checkbox"
-                value={option.value}
-              />
-              <label class="govuk-label govuk-checkboxes__label" for={`filter-preview-${option.value}`}>
-                {option.label}
-              </label>
-            </div>
-          ))
-        }
-      </div>
-    </fieldset>
+        <fieldset class="govuk-fieldset app-filter-panel__group">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Preview status</legend>
+          <div class="govuk-checkboxes govuk-checkboxes--small">
+            {
+              previewOptions.map((option) => (
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id={`filter-preview-${option.value}`}
+                    name="preview"
+                    type="checkbox"
+                    value={option.value}
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" for={`filter-preview-${option.value}`}>
+                    {option.label}
+                  </label>
+                </div>
+              ))
+            }
+          </div>
+        </fieldset>
 
-    <fieldset class="govuk-fieldset app-filter-panel__group">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Accessibility status</legend>
-      <div class="govuk-checkboxes govuk-checkboxes--small">
-        {
-          accessibilityOptions.map((option) => (
-            <div class="govuk-checkboxes__item">
-              <input
-                class="govuk-checkboxes__input"
-                id={`filter-accessible-${option.value}`}
-                name="accessible"
-                type="checkbox"
-                value={option.value}
-              />
-              <label class="govuk-label govuk-checkboxes__label" for={`filter-accessible-${option.value}`}>
-                {option.label}
-              </label>
-            </div>
-          ))
-        }
+        <fieldset class="govuk-fieldset app-filter-panel__group">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Accessibility status</legend>
+          <div class="govuk-checkboxes govuk-checkboxes--small">
+            {
+              accessibilityOptions.map((option) => (
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id={`filter-accessible-${option.value}`}
+                    name="accessible"
+                    type="checkbox"
+                    value={option.value}
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" for={`filter-accessible-${option.value}`}>
+                    {option.label}
+                  </label>
+                </div>
+              ))
+            }
+          </div>
+        </fieldset>
       </div>
-    </fieldset>
-  </div>
 
-  <div class="govuk-button-group app-filter-panel__actions">
-    <button class="govuk-button" type="submit">Apply filters</button>
-    <button class="govuk-button govuk-button--secondary" type="button" data-filter-reset>
-      Reset filters
-    </button>
-  </div>
+      <div class="govuk-button-group app-filter-panel__actions">
+        <button class="govuk-button" type="submit">Apply filters</button>
+        <button class="govuk-button govuk-button--secondary" type="button" data-filter-reset>
+          Reset filters
+        </button>
+      </div>
+    </div>
+  </details>
 </form>

@@ -22,12 +22,7 @@ import { withBase } from "../utils/paths";
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">Data</h1>
       <p class="govuk-body-l">
-        The first public dataset is the Power Apps Canvas Controls accessibility export from the
-        Defra tenant.
-      </p>
-      <p class="govuk-body">
-        The exported JSON updates automatically each day, then the data contract tests validate it
-        before the published site updates.
+        Source data, export details and publication rules for the Power Apps Canvas Controls catalogue.
       </p>
     </div>
   </div>
@@ -70,7 +65,6 @@ import { withBase } from "../utils/paths";
       <li>The exported JSON updates automatically each day from the Defra tenant.</li>
       <li>Data contract tests validate the schema, record count, dates, recommendations and slugs.</li>
       <li>Guidance HTML is sanitised at build time before it is rendered.</li>
-      <li>Generated summary counts are reviewed through the build output.</li>
       <li>The GitHub Pages workflow publishes <code>site/dist</code> after checks pass.</li>
     </ol>
     <p class="govuk-body">
@@ -83,11 +77,7 @@ import { withBase } from "../utils/paths";
     <h2 class="govuk-heading-l" id="screenshots-heading">Screenshot status</h2>
     <p class="govuk-body">
       The source data includes Dataverse-relative <code>screenshotUrl</code> values. These are not
-      rendered on GitHub Pages.
-    </p>
-    <p class="govuk-body">
-      Screenshots will only be added after static image assets, stable paths and suitable alt text
-      are available.
+      rendered until static image assets and suitable alt text are available.
     </p>
   </section>
 </BaseLayout>

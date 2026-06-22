@@ -12,7 +12,6 @@ interface Props {
 const { control } = Astro.props;
 const accessibleText = control.isAccessible ? "Yes" : "No";
 const previewText = control.isInPreview ? "In preview" : "Not in preview";
-const guidanceText = control.guidanceHtml ? "Guidance available" : "No guidance available";
 const modifiedDate = formatDate(control.modifiedOn);
 ---
 
@@ -60,9 +59,5 @@ const modifiedDate = formatDate(control.modifiedOn);
     <dd class="govuk-summary-list__value">
       <time datetime={control.modifiedOn}>{modifiedDate}</time>
     </dd>
-  </div>
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Guidance</dt>
-    <dd class="govuk-summary-list__value">{guidanceText}</dd>
   </div>
 </dl>
