@@ -11,8 +11,8 @@ interface Props {
 
 const { control } = Astro.props;
 const accessibleText = control.isAccessible ? "Yes" : "No";
-const previewText = control.isInPreview ? "In preview" : "Not in preview";
-const guidanceText = control.guidanceHtml ? "Guidance available" : "No guidance available";
+const previewText = control.isInPreview ? "Yes" : "No";
+const guidanceText = control.guidanceHtml ? "Available" : "None";
 const detailUrl = withBase(`/canvas-controls/controls/${control.slug}/`);
 const filterAttributes = {
   "data-control-result": "",

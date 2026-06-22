@@ -177,9 +177,17 @@ body {
   border-top: 4px solid #1d70b8;
 }
 
-.app-filter-panel__heading,
 .app-filter-panel__search {
   margin-bottom: 20px;
+}
+
+.app-filter-panel__details {
+  margin-bottom: 0;
+}
+
+.app-filter-panel__details-body {
+  padding-top: 20px;
+  padding-bottom: 0;
 }
 
 .app-filter-panel__groups {

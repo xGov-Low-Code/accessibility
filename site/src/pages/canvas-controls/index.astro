@@ -1,7 +1,6 @@
 ---
 import ControlResultCard from "../../components/ControlResultCard.astro";
 import ControlResultsTable from "../../components/ControlResultsTable.astro";
-import DatasetSummary from "../../components/DatasetSummary.astro";
 import EmptyState from "../../components/EmptyState.astro";
 import FilterPanel from "../../components/FilterPanel.astro";
 import ResultsCount from "../../components/ResultsCount.astro";
@@ -32,23 +31,18 @@ const controls = [...publicCanvasControls].sort((first, second) =>
       <span class="govuk-caption-l">Power Apps</span>
       <h1 class="govuk-heading-xl">Canvas Controls Accessibility</h1>
       <p class="govuk-body-l">
-        Recommendations, guidance availability and assessment metadata for active Power Apps Canvas Controls.
-      </p>
-      <p class="govuk-body">
-        Recommendation is the main decision aid. Accessibility status is shown separately because a control can
-        be technically accessible while still needing amendments or caution.
-      </p>
-      <p class="govuk-body">
-        This catalogue publishes active controls only. Inactive records remain in the source dataset for audit
-        purposes and are excluded from the public list and summary counts.
+        Search active Power Apps Canvas Controls and compare accessibility recommendations.
       </p>
     </div>
   </div>
 
-  <DatasetSummary summary={canvasControlsSummary} />
-
   <section class="app-section" aria-labelledby="catalogue-heading">
     <h2 class="govuk-heading-l" id="catalogue-heading">Controls catalogue</h2>
+    <p class="govuk-body app-muted">
+      <strong>{canvasControlsSummary.publicRecordCount}</strong> active controls. Last exported
+      <time datetime={canvasControlsSummary.exportedAtUtc}>{canvasControlsSummary.exportedDate}</time>.
+      <a class="govuk-link" href={withBase("/data/")}>View source data and publication rules</a>.
+    </p>
 
     {
       controls.length > 0 ? (
@@ -101,6 +95,7 @@ const controls = [...publicCanvasControls].sort((first, second) =>
     const filterForm = form;
     const filterSearchInput = searchInput;
     const resultsCountElement = resultsCount;
+    const filterDetails = filterForm.querySelector<HTMLDetailsElement>("[data-filter-details]");
     const recordsBySlug = new Map<string, CanvasControlFilterRecord>();
     const elementsBySlug = new Map<string, HTMLElement[]>();
 
@@ -191,6 +186,9 @@ const controls = [...publicCanvasControls].sort((first, second) =>
       const state = readStateFromUrl();
 
       writeStateToForm(state);
+      if (filterDetails && hasSelectedFilters(state)) {
+        filterDetails.open = true;
+      }
       applyFilters(state);
     }
 
@@ -309,6 +307,15 @@ const controls = [...publicCanvasControls].sort((first, second) =>
       for (const value of values) {
         params.append(name, value);
       }
+    }
+
+    function hasSelectedFilters(state: CanvasControlFilterState): boolean {
+      return (
+        state.recommendations.length > 0 ||
+        state.controlTypes.length > 0 ||
+        state.preview.length > 0 ||
+        state.accessible.length > 0
+      );
     }
   }
 </script>
